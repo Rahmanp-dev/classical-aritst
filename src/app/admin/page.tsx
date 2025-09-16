@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { DUMMY_ADMIN_PASSWORD } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
@@ -255,7 +256,7 @@ export default function AdminPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <FormLabel htmlFor="password">Password</FormLabel>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
