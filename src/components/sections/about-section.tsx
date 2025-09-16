@@ -2,8 +2,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { artistName } from '@/lib/data';
-import { DynamicBio } from '@/components/dynamic-bio';
+import { artistName, artistBio } from '@/lib/data';
 
 export function AboutSection() {
   const artistImage = PlaceHolderImages.find(img => img.id === 'about-artist');
@@ -29,7 +28,7 @@ export function AboutSection() {
           <div className="md:col-span-3">
             <h2 className="text-4xl md:text-5xl font-bold font-headline mb-4">About {artistName}</h2>
             <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground space-y-4 mb-8">
-              <DynamicBio />
+              <p>{artistBio}</p>
             </div>
             <Button asChild size="lg">
               <a href="/press-kit.pdf" download>
