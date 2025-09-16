@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { DUMMY_ADMIN_PASSWORD, galleryItems } from '@/lib/data';
@@ -17,6 +17,8 @@ import { Trash2, Upload } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
 
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
@@ -102,6 +104,8 @@ function AdminDashboard() {
   const { fields: socialLinkFields, append: appendSocialLink, remove: removeSocialLink } = useFieldArray({ control: form.control, name: "socialLinks" });
   const { fields: navLinkFields, append: appendNavLink, remove: removeNavLink } = useFieldArray({ control: form.control, name: "navLinks" });
   const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem, update: updateGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
+
+  const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -260,6 +264,17 @@ function AdminDashboard() {
                   <CardTitle>Gallery Images</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
+                   {!isCloudinaryEnabled && (
+                    <Alert>
+                      <Terminal className="h-4 w-4" />
+                      <AlertTitle>Cloudinary is not configured</AlertTitle>
+                      <AlertDescription>
+                        To enable image uploads, you need to add your Cloudinary cloud name to your environment variables. Create a file named `.env` in the root of your project and add the following line:
+                        <pre className="mt-2 rounded-md bg-muted p-2 text-sm"><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"</code></pre>
+                        You can get a free cloud name from <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary</a>.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   {galleryItemFields.map((field, index) => (
                     <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                       <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
@@ -289,7 +304,8 @@ function AdminDashboard() {
                           )}
                         />
                         <div className='flex gap-2'>
-                           <CldUploadWidget
+                           {isCloudinaryEnabled && (
+                            <CldUploadWidget
                                 signatureEndpoint="/api/sign-cloudinary-params"
                                 onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, index)}
                             >
@@ -299,6 +315,7 @@ function AdminDashboard() {
                                     </Button>
                                 )}
                             </CldUploadWidget>
+                           )}
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeGalleryItem(index)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -392,3 +409,5 @@ export default function AdminPage() {
 
   return <AdminDashboard />;
 }
+
+    
