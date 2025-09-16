@@ -1,0 +1,67 @@
+import Link from 'next/link';
+import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { socialLinks, artistName } from '@/lib/data';
+import { Logo } from '../icons';
+
+const iconMap = {
+  instagram: Instagram,
+  twitter: Twitter,
+  facebook: Facebook,
+};
+
+export function Footer() {
+  return (
+    <footer className="bg-muted/40 border-t">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex flex-col items-center md:items-start">
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
+              <Logo className="text-primary h-7 w-7" />
+              <span className="font-headline">{artistName}</span>
+            </Link>
+            <div className="flex space-x-4">
+              {socialLinks.map(({ platform, url, icon }) => {
+                const IconComponent = iconMap[icon as keyof typeof iconMap];
+                return (
+                  <Button key={platform} asChild variant="ghost" size="icon">
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      <IconComponent className="h-5 w-5" />
+                      <span className="sr-only">{platform}</span>
+                    </a>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-center md:items-start">
+            <h3 className="font-headline text-lg mb-4">Stay Updated</h3>
+            <p className="text-muted-foreground text-sm mb-4 text-center md:text-left">
+              Subscribe to the newsletter for tour dates, new music, and more.
+            </p>
+            <form className="flex w-full max-w-sm">
+              <Input type="email" placeholder="Enter your email" className="rounded-r-none" />
+              <Button type="submit" className="rounded-l-none">Subscribe</Button>
+            </form>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end text-center md:text-right">
+             <h3 className="font-headline text-lg mb-4">Links</h3>
+             <div className="flex flex-col space-y-2 text-sm">
+                <Link href="#tour" className="text-muted-foreground hover:text-primary transition-colors">Tour</Link>
+                <Link href="#music" className="text-muted-foreground hover:text-primary transition-colors">Music</Link>
+                <Link href="#about" className="text-muted-foreground hover:text-primary transition-colors">About</Link>
+                <Link href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+             </div>
+          </div>
+        </div>
+
+        <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} {artistName}. All Rights Reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
