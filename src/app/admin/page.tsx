@@ -11,10 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DUMMY_ADMIN_PASSWORD } from '@/lib/data';
+import { DUMMY_ADMIN_PASSWORD, galleryItems } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2 } from 'lucide-react';
+import { Trash2, Upload } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { CldUploadWidget } from 'next-cloudinary';
+import Image from 'next/image';
 
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
@@ -40,7 +42,23 @@ const formSchema = z.object({
     href: z.string().min(1, 'Href is required.'),
     label: z.string().min(1, 'Label is required.'),
   })),
+  galleryItems: z.array(z.object({
+      id: z.string(),
+      title: z.string().min(1, "Title is required."),
+      description: z.string().min(1, "Description is required."),
+      image: z.object({
+          imageUrl: z.string().url("Must be a valid URL."),
+          imageHint: z.string(),
+      }),
+  })),
 });
+
+type CloudinaryUploadResult = {
+  info?: {
+    secure_url: string;
+  };
+  event: string;
+};
 
 function AdminDashboard() {
   const { toast } = useToast();
@@ -75,6 +93,7 @@ function AdminDashboard() {
         { href: '#about', label: 'About' },
         { href: '#contact', label: 'Contact' },
       ],
+      galleryItems: galleryItems,
     }
   });
 
@@ -82,6 +101,7 @@ function AdminDashboard() {
   const { fields: musicLinkFields, append: appendMusicLink, remove: removeMusicLink } = useFieldArray({ control: form.control, name: "musicLinks" });
   const { fields: socialLinkFields, append: appendSocialLink, remove: removeSocialLink } = useFieldArray({ control: form.control, name: "socialLinks" });
   const { fields: navLinkFields, append: appendNavLink, remove: removeNavLink } = useFieldArray({ control: form.control, name: "navLinks" });
+  const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem, update: updateGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -90,6 +110,20 @@ function AdminDashboard() {
       description: "Your website content has been updated.",
     });
   }
+  
+  const handleImageUpload = (result: CloudinaryUploadResult, index: number) => {
+    if (result.event === 'success' && result.info) {
+        const currentItem = form.getValues(`galleryItems.${index}`);
+        updateGalleryItem(index, {
+            ...currentItem,
+            image: {
+                ...currentItem.image,
+                imageUrl: result.info.secure_url,
+            }
+        });
+        toast({ title: 'Image Uploaded', description: 'The image has been successfully uploaded and updated.' });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -97,11 +131,12 @@ function AdminDashboard() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Tabs defaultValue="general">
-            <TabsList>
+            <TabsList className="flex flex-wrap h-auto">
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="tour">Tour Dates</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="nav">Navigation</TabsTrigger>
+              <TabsTrigger value="images">Images</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="mt-6">
@@ -218,6 +253,76 @@ function AdminDashboard() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="images" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gallery Images</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  {galleryItemFields.map((field, index) => (
+                    <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                      <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                          <Image src={field.image.imageUrl} alt={field.title} fill className="object-cover"/>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 flex-1">
+                        <FormField
+                          control={form.control}
+                          name={`galleryItems.${index}.title`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl><Input {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`galleryItems.${index}.description`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl><Input {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className='flex gap-2'>
+                           <CldUploadWidget
+                                signatureEndpoint="/api/sign-cloudinary-params"
+                                onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, index)}
+                            >
+                                {({ open }) => (
+                                    <Button type="button" variant="outline" onClick={() => open()}>
+                                        <Upload className="mr-2 h-4 w-4" /> Change Image
+                                    </Button>
+                                )}
+                            </CldUploadWidget>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => removeGalleryItem(index)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      appendGalleryItem({
+                        id: `gallery-${Date.now()}`,
+                        title: 'New Image',
+                        description: 'A new description',
+                        image: { imageUrl: 'https://picsum.photos/seed/new/600/400', imageHint: 'new image' },
+                      })
+                    }
+                  >
+                    Add Gallery Item
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
 
           <Button type="submit" size="lg">Save All Changes</Button>
@@ -230,18 +335,19 @@ function AdminDashboard() {
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const { toast } = useToast();
+  
+  const form = useForm({
+      defaultValues: { password: '' },
+  });
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === DUMMY_ADMIN_PASSWORD) {
+
+  const handleLogin = (values: {password: string}) => {
+    if (values.password === DUMMY_ADMIN_PASSWORD) {
       setIsAuthenticated(true);
-      setError('');
       toast({ title: 'Login Successful', description: 'Welcome to the admin dashboard.' });
     } else {
-      setError('Incorrect password.');
+      form.setError('password', { type: 'manual', message: 'Incorrect password.' });
       toast({ variant: 'destructive', title: 'Login Failed', description: 'The password you entered is incorrect.' });
     }
   };
@@ -254,22 +360,30 @@ export default function AdminPage() {
             <CardTitle className="text-2xl font-bold font-headline text-center">Admin Access</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
-                />
-                {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              </div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </form>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="password"
+                                        {...field}
+                                        placeholder="Enter admin password"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full">
+                        Login
+                    </Button>
+                </form>
+            </Form>
           </CardContent>
         </Card>
       </div>
