@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 import { DUMMY_ADMIN_PASSWORD, galleryItems } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Upload } from 'lucide-react';
-import { Label } from '@/components/ui/label';
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -140,21 +139,21 @@ function AdminDashboard() {
               <TabsTrigger value="tour">Tour Dates</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="nav">Navigation</TabsTrigger>
-              <TabsTrigger value="images">Images</TabsTrigger>
+              <TabsTrigger value="images">Gallery</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="mt-6">
               <Card>
-                <CardHeader><CardTitle>General Information</CardTitle></CardHeader>
+                <CardHeader><CardTitle>General Information</CardTitle><CardDescription>Manage the main artist details and biography.</CardDescription></CardHeader>
                 <CardContent className="space-y-6 pt-6">
                   <FormField control={form.control} name="artistName" render={({ field }) => (
                     <FormItem><FormLabel>Artist Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="artistTagline" render={({ field }) => (
-                    <FormItem><FormLabel>Artist Tagline</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Artist Tagline (shown on hero)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="artistBio" render={({ field }) => (
-                    <FormItem><FormLabel>Artist Bio</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Artist Bio (shown on about section)</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
                   )} />
                 </CardContent>
               </Card>
@@ -162,7 +161,7 @@ function AdminDashboard() {
 
             <TabsContent value="tour" className="mt-6">
               <Card>
-                <CardHeader><CardTitle>Tour Dates</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Tour Dates</CardTitle><CardDescription>Add or remove upcoming tour dates.</CardDescription></CardHeader>
                 <CardContent className="space-y-4 pt-6">
                   {tourDateFields.map((field, index) => (
                     <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md relative">
@@ -190,7 +189,7 @@ function AdminDashboard() {
 
             <TabsContent value="links" className="mt-6 space-y-8">
                <Card>
-                <CardHeader><CardTitle>Music Links</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Music Links</CardTitle><CardDescription>Links to streaming platforms shown in the Music section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4 pt-6">
                   {musicLinkFields.map((field, index) => (
                     <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
@@ -213,7 +212,7 @@ function AdminDashboard() {
               </Card>
 
               <Card>
-                <CardHeader><CardTitle>Social Links</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Social Links</CardTitle><CardDescription>Links to social media profiles shown in the footer.</CardDescription></CardHeader>
                 <CardContent className="space-y-4 pt-6">
                   {socialLinkFields.map((field, index) => (
                     <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
@@ -238,7 +237,7 @@ function AdminDashboard() {
 
             <TabsContent value="nav" className="mt-6">
               <Card>
-                <CardHeader><CardTitle>Navigation Links</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Navigation Links</CardTitle><CardDescription>Manage the main site navigation links in the header.</CardDescription></CardHeader>
                 <CardContent className="space-y-4 pt-6">
                    {navLinkFields.map((field, index) => (
                     <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
@@ -262,6 +261,7 @@ function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Gallery Images</CardTitle>
+                  <CardDescription>Manage the images in your gallery section.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
                    {!isCloudinaryEnabled && (
@@ -355,6 +355,7 @@ export default function AdminPage() {
   const { toast } = useToast();
   
   const form = useForm({
+      resolver: zodResolver(z.object({ password: z.string() })),
       defaultValues: { password: '' },
   });
 
