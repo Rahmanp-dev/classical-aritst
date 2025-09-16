@@ -23,7 +23,7 @@ export function MusicSection() {
 
         <div className="flex justify-center flex-wrap gap-4 mb-12">
           {musicLinks.map(({ platform, url, icon }) => {
-            const IconComponent = iconMap[icon as keyof typeof iconMap];
+            const IconComponent = iconMap[icon as keyof typeof iconMap] || 'div';
             return (
               <Button key={platform} asChild size="lg" variant="outline" className="min-w-[180px]">
                 <a href={url} target="_blank" rel="noopener noreferrer">

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { socialLinks, artistName } from '@/lib/data';
+import { socialLinks, artistName, navLinks } from '@/lib/data';
 import { Logo } from '../icons';
 
 const iconMap = {
@@ -23,7 +23,7 @@ export function Footer() {
             </Link>
             <div className="flex space-x-4">
               {socialLinks.map(({ platform, url, icon }) => {
-                const IconComponent = iconMap[icon as keyof typeof iconMap];
+                const IconComponent = iconMap[icon as keyof typeof iconMap] || 'div';
                 return (
                   <Button key={platform} asChild variant="ghost" size="icon">
                     <a href={url} target="_blank" rel="noopener noreferrer">
@@ -50,10 +50,9 @@ export function Footer() {
           <div className="flex flex-col items-center md:items-end text-center md:text-right">
              <h3 className="font-headline text-lg mb-4">Links</h3>
              <div className="flex flex-col space-y-2 text-sm">
-                <Link href="#tour" className="text-muted-foreground hover:text-primary transition-colors">Tour</Link>
-                <Link href="#music" className="text-muted-foreground hover:text-primary transition-colors">Music</Link>
-                <Link href="#about" className="text-muted-foreground hover:text-primary transition-colors">About</Link>
-                <Link href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+                {navLinks.map(link => (
+                    <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-primary transition-colors">{link.label}</Link>
+                ))}
              </div>
           </div>
         </div>

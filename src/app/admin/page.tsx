@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DUMMY_ADMIN_PASSWORD, galleryItems } from '@/lib/data';
+import { DUMMY_ADMIN_PASSWORD, galleryItems, tourDates, musicLinks, socialLinks, navLinks } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Upload } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
@@ -70,31 +70,11 @@ function AdminDashboard() {
       artistName: "Acoustic Edge",
       artistTagline: "Classical Music Reimagined",
       artistBio: "Acoustic Edge is a musical pioneer, blending classical techniques with modern electronic soundscapes to create a truly unique auditory experience. With a background in classical cello and a passion for contemporary production, Acoustic Edge bridges centuries of music, captivating audiences worldwide.",
-      tourDates: [
-        { date: 'OCT 25, 2024', venue: 'The Grand Hall', city: 'Berlin', ticketUrl: '#' },
-        { date: 'NOV 02, 2024', venue: 'Symphony House', city: 'London', ticketUrl: '#' },
-        { date: 'NOV 15, 2024', venue: 'Le Trianon', city: 'Paris', ticketUrl: '#' },
-        { date: 'DEC 01, 2024', venue: 'Carnegie Hall', city: 'New York', ticketUrl: '#' },
-      ],
-      musicLinks: [
-        { platform: 'Spotify', url: '#', icon: 'spotify' },
-        { platform: 'Apple Music', url: '#', icon: 'apple' },
-        { platform: 'Youtube', url: '#', icon: 'youtube' },
-        { platform: 'SoundCloud', url: '#', icon: 'soundcloud' },
-      ],
-      socialLinks: [
-        { platform: 'Instagram', url: '#', icon: 'instagram' },
-        { platform: 'Twitter', url: '#', icon: 'twitter' },
-        { platform: 'Facebook', url: '#', icon: 'facebook' },
-      ],
-      navLinks: [
-        { href: '#tour', label: 'Tour' },
-        { href: '#music', label: 'Music' },
-        { href: '#gallery', label: 'Gallery' },
-        { href: '#about', label: 'About' },
-        { href: '#contact', label: 'Contact' },
-      ],
-      galleryItems: galleryItems,
+      tourDates,
+      musicLinks,
+      socialLinks,
+      navLinks,
+      galleryItems,
     }
   });
 
@@ -108,9 +88,10 @@ function AdminDashboard() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    // Here you would typically send the data to your backend/database
     toast({
       title: "Content Saved!",
-      description: "Your website content has been updated.",
+      description: "Your website content has been updated. (Demo only - data is not saved)",
     });
   }
   
@@ -303,6 +284,17 @@ function AdminDashboard() {
                             </FormItem>
                           )}
                         />
+                         <FormField
+                          control={form.control}
+                          name={`galleryItems.${index}.image.imageHint`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Image Hint</FormLabel>
+                              <FormControl><Input {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                         <div className='flex gap-2'>
                            {isCloudinaryEnabled && (
                             <CldUploadWidget
@@ -377,7 +369,7 @@ export default function AdminPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-bold font-headline text-center">Admin Access</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
                     <FormField
@@ -410,5 +402,3 @@ export default function AdminPage() {
 
   return <AdminDashboard />;
 }
-
-    
