@@ -42,19 +42,23 @@ export const artistName = "Acoustic Edge";
 export const artistTagline = "Classical Music Reimagined";
 export const artistBio = "Acoustic Edge is a musical pioneer, blending classical techniques with modern electronic soundscapes to create a truly unique auditory experience. With a background in classical cello and a passion for contemporary production, Acoustic Edge bridges centuries of music, captivating audiences worldwide.";
 
-export const heroImage: ImageType = {
-  id: "hero-background",
-  description: "A dramatic shot of a cellist on a dark stage, illuminated by a single spotlight.",
+export const heroImage: Omit<ImageType, "id" | "description"> = {
   imageUrl: "https://picsum.photos/seed/hero/1920/1080",
   imageHint: "musician stage"
 };
 
-export const artistImage: ImageType = {
-  id: "about-artist",
-  description: "A portrait of the artist looking thoughtful.",
+export const artistImage: Omit<ImageType, "id" | "description"> = {
   imageUrl: "https://picsum.photos/seed/about/600/800",
   imageHint: "artist portrait"
 };
+
+export const tourImage: ImageType = {
+  id: "tour-map",
+  description: "An illustrative map showing tour locations.",
+  imageUrl: "https://picsum.photos/seed/map/1200/800",
+  imageHint: "tour map"
+};
+
 
 export const tourDates: TourDate[] = [
   { date: 'OCT 25, 2024', venue: 'The Grand Hall', city: 'Berlin', ticketUrl: '#' },

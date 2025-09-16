@@ -1,15 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, MapPin, Ticket } from 'lucide-react';
-import { tourDates } from '@/lib/data';
-
-function MapPlaceholder() {
-  return (
-    <div className="w-full h-full min-h-[400px] bg-muted rounded-lg flex items-center justify-center">
-      <p className="text-muted-foreground">Interactive map would be here</p>
-    </div>
-  );
-}
+import { Ticket } from 'lucide-react';
+import { tourDates, tourImage } from '@/lib/data';
 
 export function TourSection() {
   return (
@@ -47,7 +40,15 @@ export function TourSection() {
           </div>
           <div className="lg:col-span-2">
             <Card className="overflow-hidden h-full">
-              <MapPlaceholder />
+              <div className="relative w-full h-full min-h-[400px] bg-muted rounded-lg">
+                <Image
+                  src={tourImage.imageUrl}
+                  alt={tourImage.description}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={tourImage.imageHint}
+                />
+              </div>
             </Card>
           </div>
         </div>

@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DUMMY_ADMIN_PASSWORD, galleryItems, tourDates, musicLinks, socialLinks, navLinks } from '@/lib/data';
+import { DUMMY_ADMIN_PASSWORD, galleryItems, tourDates, musicLinks, socialLinks, navLinks, artistImage, heroImage, tourImage } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Upload } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
@@ -19,10 +19,18 @@ import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 
+const imageSchema = z.object({
+  imageUrl: z.string().url("Must be a valid URL."),
+  imageHint: z.string(),
+});
+
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
   artistBio: z.string().min(1, 'Artist bio is required.'),
+  heroImage: imageSchema,
+  artistImage: imageSchema,
+  tourImage: imageSchema,
   tourDates: z.array(z.object({
     date: z.string().min(1, 'Date is required.'),
     venue: z.string().min(1, 'Venue is required.'),
@@ -47,10 +55,7 @@ const formSchema = z.object({
       id: z.string(),
       title: z.string().min(1, "Title is required."),
       description: z.string().min(1, "Description is required."),
-      image: z.object({
-          imageUrl: z.string().url("Must be a valid URL."),
-          imageHint: z.string(),
-      }),
+      image: imageSchema,
   })),
 });
 
@@ -70,6 +75,9 @@ function AdminDashboard() {
       artistName: "Acoustic Edge",
       artistTagline: "Classical Music Reimagined",
       artistBio: "Acoustic Edge is a musical pioneer, blending classical techniques with modern electronic soundscapes to create a truly unique auditory experience. With a background in classical cello and a passion for contemporary production, Acoustic Edge bridges centuries of music, captivating audiences worldwide.",
+      heroImage,
+      artistImage,
+      tourImage,
       tourDates,
       musicLinks,
       socialLinks,
@@ -95,7 +103,7 @@ function AdminDashboard() {
     });
   }
   
-  const handleImageUpload = (result: CloudinaryUploadResult, index: number) => {
+  const handleGalleryImageUpload = (result: CloudinaryUploadResult, index: number) => {
     if (result.event === 'success' && result.info) {
         const currentItem = form.getValues(`galleryItems.${index}`);
         updateGalleryItem(index, {
@@ -108,22 +116,40 @@ function AdminDashboard() {
         toast({ title: 'Image Uploaded', description: 'The image has been successfully uploaded and updated.' });
     }
   };
+  
+  const handleSingleImageUpload = (result: CloudinaryUploadResult, fieldName: "heroImage" | "artistImage" | "tourImage") => {
+    if (result.event === 'success' && result.info) {
+        form.setValue(`${fieldName}.imageUrl`, result.info.secure_url);
+        toast({ title: 'Image Uploaded', description: 'The image has been successfully uploaded and updated.' });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold font-headline mb-8">Admin Dashboard</h1>
+       {!isCloudinaryEnabled && (
+        <Alert className="mb-8">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Cloudinary is not configured</AlertTitle>
+          <AlertDescription>
+            To enable image uploads, you need to add your Cloudinary cloud name to your environment variables. Create a file named `.env` in the root of your project and add the following line:
+            <pre className="mt-2 rounded-md bg-muted p-2 text-sm"><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"</code></pre>
+            You can get a free cloud name from <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary</a>.
+          </AlertDescription>
+        </Alert>
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Tabs defaultValue="general">
             <TabsList className="flex flex-wrap h-auto">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="tour">Tour Dates</TabsTrigger>
+              <TabsTrigger value="general">General & Site Images</TabsTrigger>
+              <TabsTrigger value="tour">Tour</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="nav">Navigation</TabsTrigger>
-              <TabsTrigger value="images">Gallery</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="general" className="mt-6">
+            <TabsContent value="general" className="mt-6 space-y-8">
               <Card>
                 <CardHeader><CardTitle>General Information</CardTitle><CardDescription>Manage the main artist details and biography.</CardDescription></CardHeader>
                 <CardContent className="space-y-6 pt-6">
@@ -138,9 +164,44 @@ function AdminDashboard() {
                   )} />
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader><CardTitle>Site Images</CardTitle><CardDescription>Manage the main images used across the site.</CardDescription></CardHeader>
+                <CardContent className="space-y-6 pt-6">
+                  {/* Hero Image */}
+                  <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                      <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                          <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 flex-1">
+                          <FormLabel>Hero Section Background</FormLabel>
+                          <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
+                              <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
+                              {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                          </CldUploadWidget>}
+                      </div>
+                  </div>
+                  {/* Artist Image */}
+                  <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                      <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                          <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 flex-1">
+                          <FormLabel>About Section Portrait</FormLabel>
+                          <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
+                              <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
+                              {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                          </CldUploadWidget>}
+                      </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
-            <TabsContent value="tour" className="mt-6">
+            <TabsContent value="tour" className="mt-6 space-y-8">
               <Card>
                 <CardHeader><CardTitle>Tour Dates</CardTitle><CardDescription>Add or remove upcoming tour dates.</CardDescription></CardHeader>
                 <CardContent className="space-y-4 pt-6">
@@ -166,6 +227,24 @@ function AdminDashboard() {
                   <Button type="button" variant="outline" onClick={() => appendTourDate({ date: '', venue: '', city: '', ticketUrl: 'https://' })}>Add Tour Date</Button>
                 </CardContent>
               </Card>
+               <Card>
+                  <CardHeader><CardTitle>Tour Section Image</CardTitle><CardDescription>Manage the image for the tour section map area.</CardDescription></CardHeader>
+                  <CardContent className="pt-6">
+                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                              <Image src={form.watch('tourImage.imageUrl')} alt="Tour section image" fill className="object-cover"/>
+                          </div>
+                          <div className="grid grid-cols-1 gap-4 flex-1">
+                              <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
+                                  <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                              )} />
+                              {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                              </CldUploadWidget>}
+                          </div>
+                      </div>
+                  </CardContent>
+               </Card>
             </TabsContent>
 
             <TabsContent value="links" className="mt-6 space-y-8">
@@ -238,24 +317,13 @@ function AdminDashboard() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="images" className="mt-6">
+            <TabsContent value="gallery" className="mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Gallery Images</CardTitle>
                   <CardDescription>Manage the images in your gallery section.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
-                   {!isCloudinaryEnabled && (
-                    <Alert>
-                      <Terminal className="h-4 w-4" />
-                      <AlertTitle>Cloudinary is not configured</AlertTitle>
-                      <AlertDescription>
-                        To enable image uploads, you need to add your Cloudinary cloud name to your environment variables. Create a file named `.env` in the root of your project and add the following line:
-                        <pre className="mt-2 rounded-md bg-muted p-2 text-sm"><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"</code></pre>
-                        You can get a free cloud name from <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary</a>.
-                      </AlertDescription>
-                    </Alert>
-                  )}
                   {galleryItemFields.map((field, index) => (
                     <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                       <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
@@ -299,7 +367,7 @@ function AdminDashboard() {
                            {isCloudinaryEnabled && (
                             <CldUploadWidget
                                 signatureEndpoint="/api/sign-cloudinary-params"
-                                onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, index)}
+                                onUpload={(result) => handleGalleryImageUpload(result as CloudinaryUploadResult, index)}
                             >
                                 {({ open }) => (
                                     <Button type="button" variant="outline" onClick={() => open()}>
