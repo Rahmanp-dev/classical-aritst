@@ -46,14 +46,14 @@ export const heroImage: ImageType = {
   id: "hero-background",
   description: "A dramatic shot of a cellist on a dark stage, illuminated by a single spotlight.",
   imageUrl: "https://picsum.photos/seed/hero/1920/1080",
-  imageHint": "musician stage"
+  imageHint: "musician stage"
 };
 
 export const artistImage: ImageType = {
   id: "about-artist",
-  description": "A portrait of the artist looking thoughtful.",
+  description: "A portrait of the artist looking thoughtful.",
   imageUrl: "https://picsum.photos/seed/about/600/800",
-  imageHint": "artist portrait"
+  imageHint: "artist portrait"
 };
 
 export const tourDates: TourDate[] = [
@@ -104,7 +104,7 @@ export const galleryItems: GalleryItem[] = [
     description: 'Connecting with fans.',
     image: {
         imageUrl: "https://picsum.photos/seed/gallery4/600/400",
-        imageHint": "concert crowd"
+        imageHint: "concert crowd"
     },
   },
   {
@@ -113,7 +113,7 @@ export const galleryItems: GalleryItem[] = [
     description: 'Recording new sounds.',
     image: {
         imageUrl: "https://picsum.photos/seed/gallery5/600/400",
-        imageHint": "recording studio"
+        imageHint: "recording studio"
     },
   },
   {
@@ -122,7 +122,7 @@ export const galleryItems: GalleryItem[] = [
     description: 'Finding inspiration in the city.',
     image: {
         imageUrl: "https://picsum.photos/seed/gallery6/600/400",
-        imageHint": "artist urban"
+        imageHint: "artist urban"
     },
   },
 ];
