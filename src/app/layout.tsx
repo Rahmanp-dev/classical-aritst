@@ -1,11 +1,19 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { Inter } from 'next/font/google';
-import '@fontsource/bebas-neue';
+import { Prata, Mukta } from 'next/font/google';
 
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const prata = Prata({ 
+  subsets: ['latin'], 
+  weight: '400',
+  variable: '--font-prata' 
+});
+const mukta = Mukta({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-mukta'
+});
 
 export const metadata: Metadata = {
   title: 'Acoustic Edge | Classical Music Reimagined',
@@ -18,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
+    <html lang="en" className={`dark ${prata.variable} ${mukta.variable}`}>
       <body className="font-body antialiased">
         {children}
         <Toaster />

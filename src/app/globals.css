@@ -73,7 +73,7 @@
     @apply w-full py-20 md:py-28 lg:py-36;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline uppercase tracking-wider;
+    @apply font-headline;
   }
   body {
     @apply font-body;

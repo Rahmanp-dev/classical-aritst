@@ -11,8 +11,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ["var(--font-inter)", ...fontFamily.sans],
-        headline: ['Bebas Neue', ...fontFamily.sans],
+        body: ["var(--font-mukta)", ...fontFamily.sans],
+        headline: ["var(--font-prata)", ...fontFamily.serif],
         code: ['monospace'],
       },
       colors: {
