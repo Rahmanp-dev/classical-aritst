@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Prata, Mukta } from 'next/font/google';
+import { SiteBackground } from '@/components/layout/site-background';
 
 
 const prata = Prata({ 
@@ -28,7 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${prata.variable} ${mukta.variable}`}>
       <body className="font-body antialiased">
-        {children}
+        <SiteBackground />
+        <div className="relative z-10">
+          {children}
+        </div>
         <Toaster />
       </body>
     </html>

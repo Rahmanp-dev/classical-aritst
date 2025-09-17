@@ -13,7 +13,7 @@ export default async function Home() {
   const content = await getSiteContent();
 
   return (
-    <div className="flex flex-col min-h-dvh bg-background">
+    <div className="flex flex-col min-h-dvh bg-transparent">
       <Header navLinks={content.navLinks} artistName={content.artistName} />
       <main className="flex-1">
         <HeroSection 

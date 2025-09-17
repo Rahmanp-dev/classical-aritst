@@ -49,7 +49,7 @@ export function HeroSection({ heroImage, artistName, artistTagline }: HeroProps)
     >
       <motion.div
         className="absolute inset-0"
-        animate={{ scale: [1, 1.1, 1], rotate: [0, -1, 0]}}
+        animate={{ scale: [1, 1.05, 1], rotate: [0, 0.5, 0]}}
         transition={{
           duration: 40,
           ease: "linear",
@@ -66,8 +66,8 @@ export function HeroSection({ heroImage, artistName, artistTagline }: HeroProps)
           data-ai-hint={heroImage.imageHint}
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-black/30"></div>
 
       <motion.div 
         className="relative z-10 flex flex-col items-center text-primary-foreground px-4"
