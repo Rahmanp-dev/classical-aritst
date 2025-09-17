@@ -20,15 +20,36 @@ type TourProps = {
   tourImage: TourImage;
 }
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+const cardVariants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.1,
+      type: "spring",
+      stiffness: 100,
+      damping: 10
+    }
+  })
 };
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+}
 
 export function TourSection({ tourDates, tourImage }: TourProps) {
   const { ref, inView } = useInView({
     triggerOnce: true,
-    threshold: 0.1,
+    threshold: 0.2,
   });
 
   return (
@@ -38,27 +59,33 @@ export function TourSection({ tourDates, tourImage }: TourProps) {
       ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
-      variants={{
-        visible: { transition: { staggerChildren: 0.1 } }
-      }}
     >
       <div className="container mx-auto px-4">
-        <motion.div className="text-center mb-12" variants={fadeIn}>
-          <h2 className="text-4xl md:text-5xl font-bold font-headline">On Tour</h2>
-          <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+        <motion.div 
+          className="text-center mb-16" 
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-5xl md:text-6xl font-bold font-headline">On Tour</h2>
+          <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
             Experience the music live. Find a show near you.
           </p>
         </motion.div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1 flex flex-col gap-4">
             {tourDates.map((event, index) => (
-              <motion.div key={index} variants={fadeIn}>
-                <Card className="bg-background/80 hover:shadow-lg transition-shadow duration-300">
+              <motion.div 
+                key={index}
+                custom={index}
+                variants={cardVariants}
+              >
+                <Card className="bg-card/80 backdrop-blur-sm hover:shadow-lg hover:bg-card transition-all duration-300 border-2 border-transparent hover:border-primary/50">
                   <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-4">
                       <div className="text-center w-16 shrink-0">
                         <p className="text-sm font-bold text-primary">{event.date.split(' ')[0]}</p>
-                        <p className="text-2xl font-bold">{event.date.split(' ')[1].replace(',', '')}</p>
+                        <p className="text-3xl font-bold font-headline">{event.date.split(' ')[1].replace(',', '')}</p>
                       </div>
                       <div className="border-l pl-4">
                         <h3 className="font-bold">{event.venue}</h3>
@@ -75,8 +102,8 @@ export function TourSection({ tourDates, tourImage }: TourProps) {
               </motion.div>
             ))}
           </div>
-          <motion.div className="lg:col-span-2" variants={fadeIn}>
-            <Card className="overflow-hidden h-full">
+          <motion.div className="lg:col-span-2" variants={imageVariants}>
+            <Card className="overflow-hidden h-full shadow-2xl">
               <div className="relative w-full h-full min-h-[400px] bg-muted rounded-lg">
                 <Image
                   src={tourImage.imageUrl}
