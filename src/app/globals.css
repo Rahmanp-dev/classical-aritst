@@ -83,11 +83,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-transparent text-foreground;
+    @apply bg-background text-foreground;
   }
   html {
     @apply scroll-smooth;
-    background-color: hsl(var(--background));
   }
   section {
     @apply w-full py-20 md:py-28 lg:py-36;

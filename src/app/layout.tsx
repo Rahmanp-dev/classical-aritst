@@ -28,9 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${prata.variable} ${mukta.variable}`}>
       <body className="font-body antialiased">
-        <div className="relative z-10">
-          {children}
-        </div>
+        {children}
         <Toaster />
       </body>
     </html>
