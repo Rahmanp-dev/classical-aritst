@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,10 +7,15 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { navLinks, artistName } from '@/lib/data';
+import type { NavLink } from '@/lib/data';
 import { Logo } from '@/components/icons';
 
-export function Header() {
+type HeaderProps = {
+  navLinks: NavLink[];
+  artistName: string;
+}
+
+export function Header({ navLinks, artistName }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 

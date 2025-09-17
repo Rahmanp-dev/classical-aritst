@@ -1,8 +1,9 @@
+
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { socialLinks, artistName, navLinks } from '@/lib/data';
+import type { Link as SocialLink, NavLink } from '@/lib/data';
 import { Logo } from '../icons';
 
 const iconMap = {
@@ -11,7 +12,13 @@ const iconMap = {
   facebook: Facebook,
 };
 
-export function Footer() {
+type FooterProps = {
+  socialLinks: SocialLink[];
+  navLinks: NavLink[];
+  artistName: string;
+}
+
+export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
   return (
     <footer className="bg-muted/40 border-t">
       <div className="container mx-auto px-4 py-12">

@@ -1,5 +1,6 @@
+
 import { Button } from '@/components/ui/button';
-import { musicLinks } from '@/lib/data';
+import type { Link as MusicLink } from '@/lib/data';
 import { Youtube } from 'lucide-react';
 import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons';
 
@@ -10,7 +11,11 @@ const iconMap = {
   soundcloud: SoundcloudIcon,
 };
 
-export function MusicSection() {
+type MusicProps = {
+  musicLinks: MusicLink[];
+}
+
+export function MusicSection({ musicLinks }: MusicProps) {
   return (
     <section id="music">
       <div className="container mx-auto px-4">

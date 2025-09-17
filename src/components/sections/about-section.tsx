@@ -1,9 +1,16 @@
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import { artistImage, artistName, artistBio } from '@/lib/data';
+import type { ImageType } from '@/lib/data';
 
-export function AboutSection() {
+type AboutProps = {
+  artistImage: Omit<ImageType, "id" | "description">;
+  artistName: string;
+  artistBio: string;
+}
+
+export function AboutSection({ artistImage, artistName, artistBio }: AboutProps) {
   return (
     <section id="about">
       <div className="container mx-auto px-4">

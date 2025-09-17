@@ -1,15 +1,22 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { heroImage, artistName, artistTagline } from '@/lib/data';
+import type { ImageType } from '@/lib/data';
 import { Music, Calendar } from 'lucide-react';
 
-export function HeroSection() {
+type HeroProps = {
+  heroImage: Omit<ImageType, "id" | "description">;
+  artistName: string;
+  artistTagline: string;
+}
+
+export function HeroSection({ heroImage, artistName, artistTagline }: HeroProps) {
   return (
     <section id="home" className="relative h-dvh w-full flex items-center justify-center text-center p-0">
       <Image
         src={heroImage.imageUrl}
-        alt={heroImage.description}
+        alt="Hero background"
         fill
         className="object-cover"
         priority

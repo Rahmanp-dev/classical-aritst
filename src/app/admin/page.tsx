@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,13 +11,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DUMMY_ADMIN_PASSWORD, galleryItems, tourDates, musicLinks, socialLinks, navLinks, artistImage, heroImage, tourImage } from '@/lib/data';
+import { DUMMY_ADMIN_PASSWORD } from '@/lib/data';
+import { getSiteContent, saveSiteContent, type SiteContent } from '@/lib/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Upload } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const imageSchema = z.object({
   imageUrl: z.string().url("Must be a valid URL."),
@@ -66,24 +68,13 @@ type CloudinaryUploadResult = {
   event: string;
 };
 
-function AdminDashboard() {
+function AdminDashboard({ initialData }: { initialData: SiteContent }) {
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    // defaultValues would be fetched from a DB in a real app
-    defaultValues: {
-      artistName: "Acoustic Edge",
-      artistTagline: "Classical Music Reimagined",
-      artistBio: "Acoustic Edge is a musical pioneer, blending classical techniques with modern electronic soundscapes to create a truly unique auditory experience. With a background in classical cello and a passion for contemporary production, Acoustic Edge bridges centuries of music, captivating audiences worldwide.",
-      heroImage,
-      artistImage,
-      tourImage,
-      tourDates,
-      musicLinks,
-      socialLinks,
-      navLinks,
-      galleryItems,
-    }
+    defaultValues: initialData,
   });
 
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
@@ -94,13 +85,23 @@ function AdminDashboard() {
 
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Here you would typically send the data to your backend/database
-    toast({
-      title: "Content Saved!",
-      description: "Your website content has been updated. (Demo only - data is not saved)",
-    });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSaving(true);
+    const result = await saveSiteContent(values);
+    setIsSaving(false);
+    
+    if (result.success) {
+      toast({
+        title: "Content Saved!",
+        description: "Your website content has been successfully updated in the database.",
+      });
+    } else {
+       toast({
+        title: "Error Saving Content",
+        description: result.message,
+        variant: 'destructive'
+      });
+    }
   }
   
   const handleGalleryImageUpload = (result: CloudinaryUploadResult, index: number) => {
@@ -132,9 +133,11 @@ function AdminDashboard() {
           <Terminal className="h-4 w-4" />
           <AlertTitle>Cloudinary is not configured</AlertTitle>
           <AlertDescription>
-            To enable image uploads, you need to add your Cloudinary cloud name to your environment variables. Create a file named `.env` in the root of your project and add the following line:
-            <pre className="mt-2 rounded-md bg-muted p-2 text-sm"><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"</code></pre>
-            You can get a free cloud name from <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary</a>.
+            To enable image uploads, you need to add your Cloudinary credentials to your environment variables. Create a file named `.env` in the root of your project and add the following:
+            <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
+              <code>{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
+            </pre>
+            You can get these from your <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary dashboard</a>.
           </AlertDescription>
         </Alert>
       )}
@@ -167,7 +170,6 @@ function AdminDashboard() {
               <Card>
                 <CardHeader><CardTitle>Site Images</CardTitle><CardDescription>Manage the main images used across the site.</CardDescription></CardHeader>
                 <CardContent className="space-y-6 pt-6">
-                  {/* Hero Image */}
                   <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                       <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
                           <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>
@@ -182,7 +184,6 @@ function AdminDashboard() {
                           </CldUploadWidget>}
                       </div>
                   </div>
-                  {/* Artist Image */}
                   <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                       <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
                           <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>
@@ -402,16 +403,35 @@ function AdminDashboard() {
             </TabsContent>
           </Tabs>
 
-          <Button type="submit" size="lg">Save All Changes</Button>
+          <Button type="submit" size="lg" disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save All Changes"}
+          </Button>
         </form>
       </Form>
     </div>
   );
 }
 
+function LoadingSkeleton() {
+    return (
+        <div className="container mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold font-headline mb-8">Admin Dashboard</h1>
+            <div className="space-y-8">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-20 w-full" />
+            </div>
+        </div>
+    );
+}
+
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialData, setInitialData] = useState<SiteContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const { toast } = useToast();
   
   const form = useForm({
@@ -420,10 +440,25 @@ export default function AdminPage() {
   });
 
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      getSiteContent()
+        .then(data => {
+          setInitialData(data);
+          setIsLoading(false);
+        })
+        .catch(err => {
+            console.error(err);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to load site content.' });
+            setIsLoading(false);
+        });
+    }
+  }, [isAuthenticated, toast]);
+
   const handleLogin = (values: {password: string}) => {
     if (values.password === DUMMY_ADMIN_PASSWORD) {
       setIsAuthenticated(true);
-      toast({ title: 'Login Successful', description: 'Welcome to the admin dashboard.' });
+      toast({ title: 'Login Successful', description: 'Loading site content...' });
     } else {
       form.setError('password', { type: 'manual', message: 'Incorrect password.' });
       toast({ variant: 'destructive', title: 'Login Failed', description: 'The password you entered is incorrect.' });
@@ -468,5 +503,9 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminDashboard />;
+  if (isLoading || !initialData) {
+    return <LoadingSkeleton />;
+  }
+
+  return <AdminDashboard initialData={initialData} />;
 }

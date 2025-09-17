@@ -1,8 +1,13 @@
+
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { galleryItems } from '@/lib/data';
+import type { GalleryItem } from '@/lib/data';
 
-export function GallerySection() {
+type GalleryProps = {
+  galleryItems: GalleryItem[];
+}
+
+export function GallerySection({ galleryItems }: GalleryProps) {
   return (
     <section id="gallery" className="bg-muted/40">
       <div className="container mx-auto px-4">
@@ -14,7 +19,7 @@ export function GallerySection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {galleryItems.map((item, index) => (
+          {galleryItems.map((item) => (
             <Card
               key={item.id}
               className="overflow-hidden group transition-all duration-300 hover:shadow-xl"

@@ -1,10 +1,16 @@
+
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Ticket } from 'lucide-react';
-import { tourDates, tourImage } from '@/lib/data';
+import type { TourDate, ImageType } from '@/lib/data';
 
-export function TourSection() {
+type TourProps = {
+  tourDates: TourDate[];
+  tourImage: ImageType;
+}
+
+export function TourSection({ tourDates, tourImage }: TourProps) {
   return (
     <section id="tour" className="bg-muted/40">
       <div className="container mx-auto px-4">
