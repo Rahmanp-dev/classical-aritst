@@ -38,9 +38,9 @@ export type GalleryItem = {
 // For this demo, we're using a static file.
 // The admin panel (`/src/app/admin/page.tsx`) uses this file for its default values.
 
-export const artistName = "Acoustic Edge";
-export const artistTagline = "Classical Music Reimagined";
-export const artistBio = "Acoustic Edge is a musical pioneer, blending classical techniques with modern electronic soundscapes to create a truly unique auditory experience. With a background in classical cello and a passion for contemporary production, Acoustic Edge bridges centuries of music, captivating audiences worldwide.";
+export const artistName = "Aniruddh Aithal";
+export const artistTagline = "Hindustani Classical Musician";
+export const artistBio = "Aniruddh Aithal is a 24-year-old Hindustani classical musician with expertise in vocal music. He started formal training at 10 years old and has trained for 8 years with Smt. Geetha Garud Prithviraj, and now receives training from Dr. Ashok Huggannavar. He's an award-winning artist and a graded artist of All India Radio, and has received scholarships from CCRT and the Karnataka Sangeetha Nritya academy.";
 
 export const heroImage: Omit<ImageType, "id" | "description"> = {
   imageUrl: "https://picsum.photos/seed/hero/1920/1080",
