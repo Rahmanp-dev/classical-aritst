@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import clientPromise from '@/lib/mongodb';
 import { revalidatePath } from 'next/cache';
+import { defaultContent } from '@/lib/data';
 
 const imageSchema = z.object({
   imageUrl: z.string().url(),
@@ -50,16 +51,20 @@ export type SiteContent = z.infer<typeof formSchema>;
 const CONTENT_ID = "main_content";
 
 export async function getSiteContent(): Promise<SiteContent> {
+  if (!clientPromise) {
+    console.warn("MongoDB not connected. Falling back to default content.");
+    return defaultContent;
+  }
+  
   try {
     const client = await clientPromise;
     const db = client.db();
-    const collection = db.collection<SiteContent>('content');
+    const collection = db.collection<SiteContent & { _id: string }>('content');
     
     let content = await collection.findOne({ _id: CONTENT_ID });
 
     if (!content) {
       // If no content, insert default and return it
-      const { defaultContent } = await import('@/lib/data');
       const docToInsert = { ...defaultContent, _id: CONTENT_ID };
       await collection.insertOne(docToInsert);
       // remove the _id before returning
@@ -74,12 +79,15 @@ export async function getSiteContent(): Promise<SiteContent> {
   } catch (error) {
     console.error('Failed to fetch site content:', error);
     // Fallback to default content on error
-    const { defaultContent } = await import('@/lib/data');
     return defaultContent;
   }
 }
 
 export async function saveSiteContent(values: SiteContent) {
+  if (!clientPromise) {
+    return { success: false, message: "Database is not configured. Cannot save content." };
+  }
+  
   try {
     const client = await clientPromise;
     const db = client.db();
