@@ -3,11 +3,17 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Ticket } from 'lucide-react';
-import type { TourDate, ImageType } from '@/lib/data';
+import type { TourDate } from '@/lib/data';
+
+type TourImage = {
+  imageUrl: string;
+  imageHint: string;
+  description?: string;
+}
 
 type TourProps = {
   tourDates: TourDate[];
-  tourImage: ImageType;
+  tourImage: TourImage;
 }
 
 export function TourSection({ tourDates, tourImage }: TourProps) {
@@ -49,7 +55,7 @@ export function TourSection({ tourDates, tourImage }: TourProps) {
               <div className="relative w-full h-full min-h-[400px] bg-muted rounded-lg">
                 <Image
                   src={tourImage.imageUrl}
-                  alt={tourImage.description}
+                  alt={tourImage.description || tourImage.imageHint || 'Tour image'}
                   fill
                   className="object-cover"
                   data-ai-hint={tourImage.imageHint}
