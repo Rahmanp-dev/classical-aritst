@@ -1,10 +1,15 @@
 
+"use client";
+
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Link as SocialLink, NavLink } from '@/lib/data';
 import { Logo } from '../icons';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+
 
 const iconMap = {
   instagram: Instagram,
@@ -19,8 +24,24 @@ type FooterProps = {
 }
 
 export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   return (
-    <footer className="bg-muted/40 border-t">
+    <motion.footer 
+      className="bg-muted/40 border-t"
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={fadeIn}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="flex flex-col items-center md:items-start">
@@ -68,6 +89,6 @@ export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
           <p>&copy; {new Date().getFullYear()} {artistName}. All Rights Reserved.</p>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

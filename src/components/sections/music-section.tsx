@@ -1,8 +1,12 @@
 
+"use client";
+
 import { Button } from '@/components/ui/button';
 import type { Link as MusicLink } from '@/lib/data';
 import { Youtube } from 'lucide-react';
 import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 const iconMap = {
   spotify: SpotifyIcon,
@@ -15,18 +19,36 @@ type MusicProps = {
   musicLinks: MusicLink[];
 }
 
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export function MusicSection({ musicLinks }: MusicProps) {
+    const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   return (
-    <section id="music">
+    <motion.section 
+      id="music"
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={{
+        visible: { transition: { staggerChildren: 0.1 } }
+      }}
+    >
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <motion.div className="text-center mb-12" variants={fadeIn}>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">Discover the Music</h2>
           <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
             Listen on your favorite platform or watch the latest video.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="flex justify-center flex-wrap gap-4 mb-12">
+        <motion.div className="flex justify-center flex-wrap gap-4 mb-12" variants={fadeIn}>
           {musicLinks.map(({ platform, url, icon }) => {
             const IconComponent = iconMap[icon as keyof typeof iconMap] || 'div';
             return (
@@ -38,9 +60,9 @@ export function MusicSection({ musicLinks }: MusicProps) {
               </Button>
             );
           })}
-        </div>
+        </motion.div>
 
-        <div className="max-w-4xl mx-auto">
+        <motion.div className="max-w-4xl mx-auto" variants={fadeIn}>
           <div className="aspect-video bg-muted rounded-lg overflow-hidden shadow-2xl">
             <iframe
               className="w-full h-full"
@@ -51,8 +73,8 @@ export function MusicSection({ musicLinks }: MusicProps) {
               allowFullScreen
             ></iframe>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -10,6 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -20,6 +23,10 @@ const formSchema = z.object({
 
 export function ContactSection() {
   const { toast } = useToast();
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,7 +48,14 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="bg-muted/40">
+    <motion.section 
+      id="contact" 
+      className="bg-muted/40"
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 20 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <Card>
@@ -115,6 +129,6 @@ export function ContactSection() {
           </Card>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
