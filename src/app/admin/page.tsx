@@ -129,6 +129,11 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
+  const uploadWidgetOptions = {
+    signatureEndpoint: isCloudinaryEnabled ? "/api/sign-cloudinary-params" : undefined,
+    uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
+  };
+
   return (
     <div className="bg-muted/30 min-h-screen">
       <Form {...form}>
@@ -205,7 +210,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -219,7 +224,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -265,7 +270,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                   <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
                                       <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
-                                  {isCloudinaryEnabled && <CldUploadWidget signatureEndpoint="/api/sign-cloudinary-params" onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
+                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
                                       {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                   </CldUploadWidget>}
                               </div>
@@ -392,7 +397,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget
-                                    signatureEndpoint="/api/sign-cloudinary-params"
+                                    {...uploadWidgetOptions}
                                     onUpload={(result) => handleGalleryImageUpload(result as CloudinaryUploadResult, index)}
                                 >
                                     {({ open }) => (
@@ -565,3 +570,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
