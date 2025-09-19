@@ -11,9 +11,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ["var(--font-mukta)", ...fontFamily.sans],
-        headline: ["var(--font-prata)", ...fontFamily.serif],
-        code: ['monospace'],
+        body: ["var(--font-inter)", ...fontFamily.sans],
+        headline: ["var(--font-jetbrains-mono)", ...fontFamily.mono],
+        code: ["var(--font-jetbrains-mono)", ...fontFamily.mono],
       },
       colors: {
         background: 'hsl(var(--background))',
