@@ -88,6 +88,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem, update: updateGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
 
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const isSignedUploadEnabled = !!(process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
@@ -130,7 +132,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   };
 
   const uploadWidgetOptions = {
-    signatureEndpoint: isCloudinaryEnabled ? "/api/sign-cloudinary-params" : undefined,
+    signatureEndpoint: isSignedUploadEnabled ? "/api/sign-cloudinary-params" : undefined,
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
   };
 
@@ -312,10 +314,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="Instagram" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`socialLinks.${index}.url`} render={({ field }) => (
-                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormMessage>
                             )} />
                             <FormField control={form.control} name={`socialLinks.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram" /></FormControl><FormMessage /></FormMessage>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -542,6 +544,7 @@ export default function AdminPage() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
+
                                 <FormControl>
                                     <Input
                                         type="password"
@@ -570,5 +573,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
