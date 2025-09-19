@@ -1,18 +1,20 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { Prata, Mukta } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import { MusicBackground } from '@/components/ui/music-background';
 
 
-const prata = Prata({ 
+const inter = Inter({ 
   subsets: ['latin'], 
-  weight: '400',
-  variable: '--font-prata' 
+  variable: '--font-inter',
+  display: 'swap',
 });
-const mukta = Mukta({ 
+
+const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-mukta'
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -26,8 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${prata.variable} ${mukta.variable}`}>
+    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-body antialiased">
+        <MusicBackground />
         {children}
         <Toaster />
       </body>

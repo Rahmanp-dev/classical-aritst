@@ -4,77 +4,79 @@
 
 @layer base {
   :root {
-    --background: 275 11% 95%; /* Soft Lavender */
-    --foreground: 298 56% 9%; /* Darker for contrast */
+    /* Light mode - minimalist with subtle colors */
+    --background: 0 0% 98%; /* Almost white */
+    --foreground: 0 0% 8%; /* Almost black text */
     
-    --card: 275 11% 100%;
-    --card-foreground: 298 56% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
     
-    --popover: 275 11% 100%;
-    --popover-foreground: 298 56% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
     
-    --primary: 299 56% 19%; /* Deep Plum */
-    --primary-foreground: 275 11% 95%;
+    --primary: 262 83% 58%; /* Vibrant purple */
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 275 11% 88%;
-    --secondary-foreground: 298 56% 9%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 8%;
     
-    --muted: 275 11% 91%;
-    --muted-foreground: 298 56% 25%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
     
-    --accent: 293 25% 46%; /* Muted Violet */
-    --accent-foreground: 275 11% 95%;
+    --accent: 262 83% 95%; /* Very subtle purple tint */
+    --accent-foreground: 262 83% 58%;
     
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 275 11% 85%;
-    --input: 275 11% 88%;
-    --ring: 293 25% 46%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 262 83% 58%;
     
     --radius: 0.75rem;
 
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --chart-1: 262 83% 58%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 245 58% 51%;
+    --chart-4: 292 84% 61%;
+    --chart-5: 270 91% 65%;
   }
 
   .dark {
-    --background: 298 56% 9%; /* Dark Plum background */
-    --foreground: 275 11% 85%; /* Lighter Lavender text */
+    /* Pure black background with subtle purple accents */
+    --background: 0 0% 0%; /* Pure black */
+    --foreground: 0 0% 95%; /* Almost white text */
     
-    --card: 299 56% 12%;
-    --card-foreground: 275 11% 85%;
+    --card: 0 0% 4%; /* Very dark gray for cards */
+    --card-foreground: 0 0% 95%;
     
-    --popover: 299 56% 12%;
-    --popover-foreground: 275 11% 85%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 95%;
     
-    --primary: 299 56% 40%; /* Deep Plum for dark */
-    --primary-foreground: 275 11% 95%;
+    --primary: 262 83% 58%; /* Vibrant purple accent */
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 298 56% 15%;
-    --secondary-foreground: 275 11% 90%;
+    --secondary: 0 0% 8%; /* Dark gray */
+    --secondary-foreground: 0 0% 95%;
     
-    --muted: 298 56% 18%;
-    --muted-foreground: 275 11% 65%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 65%;
     
-    --accent: 293 25% 60%; /* Lighter Muted Violet */
-    --accent-foreground: 0 0% 100%;
+    --accent: 262 83% 18%; /* Dark purple accent */
+    --accent-foreground: 262 83% 95%;
     
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 95%;
     
-    --border: 298 56% 20%;
-    --input: 298 56% 20%;
-    --ring: 293 25% 60%;
+    --border: 0 0% 15%; /* Subtle gray borders */
+    --input: 0 0% 8%;
+    --ring: 262 83% 58%;
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 262 83% 58%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 245 58% 51%;
+    --chart-4: 292 84% 61%;
+    --chart-5: 270 91% 65%;
   }
 }
 
@@ -96,5 +98,111 @@
   }
   body {
     @apply font-body;
+  }
+}
+
+@layer utilities {
+  /* Enhanced Glassmorphism Effects */
+  .glass-card {
+    @apply bg-black/20 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50;
+  }
+  
+  .glass-card-strong {
+    @apply bg-black/30 backdrop-blur-3xl border border-white/20 shadow-2xl shadow-black/60;
+  }
+  
+  .glass-header {
+    @apply bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl shadow-black/25;
+  }
+  
+  .glass-button {
+    @apply bg-black/20 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/30;
+  }
+
+  /* Button Glow Effects */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+  
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)));
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn-glow:hover::before {
+    opacity: 1;
+    animation: glow-rotate 2s linear infinite;
+  }
+  
+  @keyframes glow-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .btn-glow-static {
+    @apply shadow-lg shadow-primary/25 border border-primary/50;
+  }
+  
+  .btn-glow-static:hover {
+    @apply shadow-xl shadow-primary/40 border-primary/70;
+  }
+
+  /* Music-themed animations */
+  @keyframes pulse-music {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+  
+  @keyframes wave-flow {
+    0% { transform: translateX(-100%) scaleY(1); }
+    50% { transform: translateX(0%) scaleY(1.2); }
+    100% { transform: translateX(100%) scaleY(1); }
+  }
+  
+  @keyframes beat-pulse {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.1); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .music-pulse {
+    animation: pulse-music 2s ease-in-out infinite;
+  }
+  
+  .wave-animation {
+    animation: wave-flow 3s ease-in-out infinite;
+  }
+  
+  .beat-pulse {
+    animation: beat-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Enhanced background effects */
+  .bg-music-gradient {
+    background: radial-gradient(ellipse at center, hsl(var(--primary) / 0.15) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 20%, hsl(var(--accent) / 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, hsl(var(--primary) / 0.1) 0%, transparent 50%);
+  }
+  
+  .floating-orb {
+    @apply absolute rounded-full blur-xl opacity-30;
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(120deg); }
+    66% { transform: translateY(10px) rotate(240deg); }
   }
 }
