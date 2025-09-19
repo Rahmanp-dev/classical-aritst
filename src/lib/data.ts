@@ -133,8 +133,3 @@ export const defaultContent = {
     { href: '#contact', label: 'Contact' },
   ],
 };
-
-
-// This is a placeholder for a real authentication system.
-// In a production app, you would use a secure method for admin access.
-export const DUMMY_ADMIN_PASSWORD = "password123";
