@@ -95,7 +95,7 @@ export async function getSiteContent(): Promise<SiteContent> {
   try {
     const client = await clientPromise;
     const db = client.db();
-    const collection = db.collection<SiteContent & { _id: string }>('content');
+    const collection = db.collection<{ _id: string } & Partial<SiteContent>>('content');
     
     let content = await collection.findOne({ _id: CONTENT_ID });
 
@@ -103,20 +103,21 @@ export async function getSiteContent(): Promise<SiteContent> {
       console.log("No content found in database. Inserting default content.");
       const docToInsert = { ...defaultContent, _id: CONTENT_ID };
       await collection.insertOne(docToInsert);
-      // remove the _id before returning
       const { _id, ...rest } = docToInsert;
       return rest;
     }
 
-    // remove the _id before returning
     const { _id, ...rest } = content;
     // ensure all fields from schema are present, using defaults for any missing ones.
-    const parsed = formSchema.safeParse(rest);
+    const mergedContent = { ...defaultContent, ...rest };
+    const parsed = formSchema.safeParse(mergedContent);
+
     if(parsed.success){
       return parsed.data;
     }
-    console.warn("Database content is malformed. Merging with default content.");
-    return { ...defaultContent, ...rest };
+
+    console.warn("Database content is malformed. Returning merged default content. Error:", parsed.error);
+    return mergedContent;
 
   } catch (error) {
     console.error('Failed to fetch site content:', error);
