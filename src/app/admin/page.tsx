@@ -97,8 +97,8 @@ type CloudinaryUploadResult = {
 // AdminDashboard: The main content management interface
 function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; onLogout: () => void; }) {
   const { toast } = useToast();
-  const [isSaving, setIsSaving(false);
-  const [isCloudinaryEnabled, setIsCloudinaryEnabled(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCloudinaryEnabled, setIsCloudinaryEnabled] = useState(false);
 
   useEffect(() => {
     const enabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
@@ -566,10 +566,10 @@ function LoadingSkeleton() {
 
 // AdminPage: The main export, handles authentication flow.
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated(false);
-  const [authChecked, setAuthChecked(false);
-  const [initialData, setInitialData<SiteContent | null>(null);
-  const [isLoading, setIsLoading(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [initialData, setInitialData] = useState<SiteContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   const form = useForm({
