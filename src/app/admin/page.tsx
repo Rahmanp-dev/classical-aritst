@@ -122,7 +122,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     console.error("Cloudinary Upload Error:", error);
     toast({
       title: 'Upload Failed',
-      description: `There was an error uploading the file. ${error.message || 'Check console for details.'}`,
+      description: `There was an error uploading the file. ${error.message || 'Check console or Cloudinary settings.'}`,
       variant: 'destructive',
     });
   };
@@ -138,7 +138,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
         } else { // For simple string fields like pressKitUrl
           form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
         }
-        toast({ title: 'Upload Successful', description: 'The field has been updated.' });
+        toast({ title: 'Upload Successful', description: 'The image preview has been updated.' });
       } else {
         handleUploadError({ message: 'Upload succeeded but no URL was returned.' });
       }
@@ -199,7 +199,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Cloudinary is not configured</AlertTitle>
                 <AlertDescription>
-                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your .env file.
+                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINary_UPLOAD_PRESET` in your .env file.
                 </AlertDescription>
               </Alert>
             )}
@@ -674,3 +674,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
