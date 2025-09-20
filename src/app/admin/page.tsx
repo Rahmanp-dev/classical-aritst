@@ -122,7 +122,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     console.error("Cloudinary Upload Error:", error);
     toast({
       title: 'Upload Failed',
-      description: `There was an error uploading the file. ${error.message || 'Check console or Cloudinary settings.'}`,
+      description: `There was an error uploading the file. ${error?.message || 'Check console or Cloudinary settings.'}`,
       variant: 'destructive',
     });
   };
@@ -199,7 +199,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Cloudinary is not configured</AlertTitle>
                 <AlertDescription>
-                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINary_UPLOAD_PRESET` in your .env file.
+                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your .env file.
                 </AlertDescription>
               </Alert>
             )}
@@ -235,7 +235,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-6 pt-6">
                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>
+                              <Image src={form.watch('heroImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Hero background" fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                               <FormLabel>Hero Background Image</FormLabel>
@@ -321,7 +321,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-6 pt-6">
                        <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>
+                              <Image src={form.watch('artistImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Artist portrait" fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                               <FormLabel>About Section Portrait</FormLabel>
@@ -387,7 +387,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       {galleryItemFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch(`galleryItems.${index}.image.imageUrl`)} alt={field.title} fill className="object-cover"/>
+                              <Image src={form.watch(`galleryItems.${index}.image`)?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt={field.title} fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                             <FormField control={form.control} name={`galleryItems.${index}.title`} render={({ field }) => (
@@ -454,7 +454,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       <CardContent className="pt-6">
                           <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                               <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                                  <Image src={form.watch('tourImage.imageUrl')} alt="Tour section image" fill className="object-cover"/>
+                                  <Image src={form.watch('tourImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Tour section image" fill className="object-cover"/>
                               </div>
                               <div className="grid grid-cols-1 gap-4 flex-1">
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
@@ -674,5 +674,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
