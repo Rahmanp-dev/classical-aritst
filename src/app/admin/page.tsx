@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CldUploadWidget, CldUploadWidgetPropsOptions } from 'next-cloudinary';
+import { CldUploadWidget, type CldUploadWidgetProps } from 'next-cloudinary';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,11 +89,6 @@ const formSchema = z.object({
   }),
 });
 
-type CloudinaryUploadResult = {
-  info?: { secure_url: string; };
-  event: string;
-};
-
 // AdminDashboard: The main content management interface
 function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; onLogout: () => void; }) {
   const { toast } = useToast();
@@ -145,7 +140,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
-  const uploadOptions: CldUploadWidgetPropsOptions = {
+  const uploadOptions: CldUploadWidgetProps['options'] = {
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
   };
@@ -674,5 +669,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
