@@ -112,15 +112,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   
-  // Cloudinary configuration
-  const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const isSignedUpload = !!process.env.CLOUDINARY_API_KEY;
-
-  const uploadWidgetOptions = {
-      ...(isSignedUpload && { signatureEndpoint: "/api/sign-cloudinary-params" }),
-      uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ml_default",
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  };
+  // Cloudinary configuration for UNSIGNED uploads
+  const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   const handleImageUpload = (result: CloudinaryUploadResult, fieldName: any) => {
       if (result.event === 'success' && result.info) {
@@ -184,8 +177,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Cloudinary is not configured</AlertTitle>
                 <AlertDescription>
-                  Image and file uploads are disabled. Please set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` in your environment variables.
-                  For secure uploads, you must also provide an upload preset or full server-side API credentials.
+                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your environment variables.
                 </AlertDescription>
               </Alert>
             )}
@@ -228,7 +220,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "heroImage.imageUrl")}>
+                              {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "heroImage.imageUrl")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -308,7 +300,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "artistImage.imageUrl")}>
+                              {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "artistImage.imageUrl")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -337,7 +329,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                           <FormLabel>Downloadable Press Kit URL</FormLabel>
                           <FormControl><Input {...field} placeholder="https://..." /></FormControl>
                           <FormMessage />
-                          {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
+                          {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
                               {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
                           </CldUploadWidget></div>}
                         </FormItem>
@@ -367,7 +359,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             )} />
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
-                                <CldUploadWidget {...uploadWidgetOptions} onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, `galleryItems.${index}.image.imageUrl`)}>
+                                <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, `galleryItems.${index}.image.imageUrl`)}>
                                     {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
@@ -422,7 +414,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
                                       <FormItem><FormLabel>Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
-                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "tourImage.imageUrl")}>
+                                  {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "tourImage.imageUrl")}>
                                       {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                   </CldUploadWidget>}
                               </div>
@@ -630,5 +622,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
