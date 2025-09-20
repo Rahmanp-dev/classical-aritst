@@ -97,14 +97,12 @@ type CloudinaryUploadResult = {
 // AdminDashboard: The main content management interface
 function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; onLogout: () => void; }) {
   const { toast } = useToast();
-  const [isSaving, setIsSaving] = useState(false);
-  const [isCloudinaryEnabled, setIsCloudinaryEnabled] = useState(false);
+  const [isSaving, setIsSaving(false);
+  const [isCloudinaryEnabled, setIsCloudinaryEnabled(false);
 
   useEffect(() => {
-    setIsCloudinaryEnabled(
-      !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
-      !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-    );
+    const enabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    setIsCloudinaryEnabled(enabled);
   }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -120,31 +118,21 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   
-  const handleUploadSuccess = (result: any, fieldPath: string) => {
+  const handleUpload = (result: any, fieldPath: any) => {
     if (result.event === 'success') {
       const secureUrl = result.info?.secure_url;
       if (secureUrl) {
-        const currentImageValue = form.getValues(fieldPath as any) || {};
-        const newImageValue = {
-          ...currentImageValue,
-          imageUrl: secureUrl
-        };
-        form.setValue(fieldPath as any, newImageValue, { shouldValidate: true, shouldDirty: true });
-        toast({ title: 'Image Uploaded', description: 'The preview has been updated.' });
+        // For nested image objects like heroImage or artistImage
+        if (typeof form.getValues(fieldPath) === 'object' && form.getValues(fieldPath) !== null) {
+          const currentImageValue = form.getValues(fieldPath) || {};
+          const newImageValue = { ...currentImageValue, imageUrl: secureUrl };
+          form.setValue(fieldPath, newImageValue, { shouldValidate: true, shouldDirty: true });
+        } else { // For simple string fields like pressKitUrl
+          form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
+        }
+        toast({ title: 'Upload Successful', description: 'The field has been updated.' });
       } else {
-        handleUploadError('Upload succeeded but no URL was returned.');
-      }
-    }
-  };
-  
-  const handleFileSuccess = (result: any, fieldPath: string) => {
-    if (result.event === 'success') {
-      const secureUrl = result.info?.secure_url;
-      if (secureUrl) {
-        form.setValue(fieldPath as any, secureUrl, { shouldValidate: true, shouldDirty: true });
-        toast({ title: 'File Uploaded', description: 'The URL has been updated.' });
-      } else {
-        handleUploadError('Upload succeeded but no URL was returned.');
+        handleUploadError({ message: 'Upload succeeded but no URL was returned.' });
       }
     }
   };
@@ -153,11 +141,11 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     console.error("Cloudinary Upload Error:", error);
     toast({
       title: 'Upload Failed',
-      description: `There was an error uploading the file. Check console for details. Error: ${error.message || 'Unknown error'}`,
+      description: `There was an error uploading the file. ${error.message || 'Check console for details.'}`,
       variant: 'destructive',
     });
   };
-
+  
   const uploadOptions: CldUploadWidgetPropsOptions = {
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
@@ -258,10 +246,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget 
                                   options={uploadOptions} 
-                                  onSuccess={(result) => handleUploadSuccess(result, "heroImage")} 
+                                  onSuccess={(result) => handleUpload(result, "heroImage")} 
                                   onError={handleUploadError}
                                 >
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                 </CldUploadWidget>
                               )}
                           </div>
@@ -344,10 +332,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget 
                                   options={uploadOptions} 
-                                  onSuccess={(r) => handleUploadSuccess(r, "artistImage")}
+                                  onSuccess={(r) => handleUpload(r, "artistImage")}
                                   onError={handleUploadError}
                                 >
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                 </CldUploadWidget>
                               )}
                           </div>
@@ -380,10 +368,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <div className="pt-2">
                               <CldUploadWidget 
                                 options={uploadOptions} 
-                                onSuccess={(r) => handleFileSuccess(r, "pressKitUrl")}
+                                onSuccess={(r) => handleUpload(r, "pressKitUrl")}
                                 onError={handleUploadError}
                               >
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
                               </CldUploadWidget>
                             </div>
                           )}
@@ -416,10 +404,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget 
                                   options={uploadOptions} 
-                                  onSuccess={(result) => handleUploadSuccess(result, `galleryItems.${index}.image`)}
+                                  onSuccess={(result) => handleUpload(result, `galleryItems.${index}.image`)}
                                   onError={handleUploadError}
                                 >
-                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
+                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
                               <Button type="button" variant="ghost" size="icon" onClick={() => removeGalleryItem(index)}>
@@ -476,10 +464,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                   {isCloudinaryEnabled && (
                                     <CldUploadWidget 
                                       options={uploadOptions} 
-                                      onSuccess={(r) => handleUploadSuccess(r, "tourImage")}
+                                      onSuccess={(r) => handleUpload(r, "tourImage")}
                                       onError={handleUploadError}
                                     >
-                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                     </CldUploadWidget>
                                   )}
                               </div>
@@ -578,10 +566,10 @@ function LoadingSkeleton() {
 
 // AdminPage: The main export, handles authentication flow.
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [initialData, setInitialData] = useState<SiteContent | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated(false);
+  const [authChecked, setAuthChecked(false);
+  const [initialData, setInitialData<SiteContent | null>(null);
+  const [isLoading, setIsLoading(true);
   const { toast } = useToast();
   
   const form = useForm({
