@@ -118,15 +118,23 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   
+  const handleUploadError = (error: any) => {
+    console.error("Cloudinary Upload Error:", error);
+    toast({
+      title: 'Upload Failed',
+      description: `There was an error uploading the file. ${error.message || 'Check console for details.'}`,
+      variant: 'destructive',
+    });
+  };
+
   const handleUpload = (result: any, fieldPath: any) => {
     if (result.event === 'success') {
       const secureUrl = result.info?.secure_url;
       if (secureUrl) {
-        // For nested image objects like heroImage or artistImage
-        if (typeof form.getValues(fieldPath) === 'object' && form.getValues(fieldPath) !== null) {
-          const currentImageValue = form.getValues(fieldPath) || {};
-          const newImageValue = { ...currentImageValue, imageUrl: secureUrl };
-          form.setValue(fieldPath, newImageValue, { shouldValidate: true, shouldDirty: true });
+        // For nested image objects like heroImage or gallery items
+        const currentImageValue = form.getValues(fieldPath) || {};
+        if (typeof currentImageValue === 'object' && currentImageValue !== null) {
+          form.setValue(fieldPath, { ...currentImageValue, imageUrl: secureUrl }, { shouldValidate: true, shouldDirty: true });
         } else { // For simple string fields like pressKitUrl
           form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
         }
@@ -137,15 +145,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
-  const handleUploadError = (error: any) => {
-    console.error("Cloudinary Upload Error:", error);
-    toast({
-      title: 'Upload Failed',
-      description: `There was an error uploading the file. ${error.message || 'Check console for details.'}`,
-      variant: 'destructive',
-    });
-  };
-  
   const uploadOptions: CldUploadWidgetPropsOptions = {
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
@@ -675,5 +674,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
