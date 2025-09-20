@@ -4,79 +4,79 @@
 
 @layer base {
   :root {
-    /* Light mode - minimalist with subtle colors */
-    --background: 0 0% 98%; /* Almost white */
-    --foreground: 0 0% 8%; /* Almost black text */
+    /* Light mode */
+    --background: 44 100% 98%; /* Light cream */
+    --foreground: 4 90% 8%; /* Almost black text */
     
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card: 44 100% 100%;
+    --card-foreground: 4 90% 8%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover: 44 100% 100%;
+    --popover-foreground: 4 90% 8%;
     
-    --primary: 262 83% 58%; /* Vibrant purple */
-    --primary-foreground: 0 0% 100%;
+    --primary: 4 90% 21%; /* Deep Red: #660B05 */
+    --primary-foreground: 44 100% 98%;
     
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 8%;
+    --secondary: 44 100% 95%; /* Creamy Yellow: #FFF0C4 */
+    --secondary-foreground: 4 90% 8%;
     
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 44 100% 95%;
+    --muted-foreground: 4 20% 45%;
     
-    --accent: 262 83% 95%; /* Very subtle purple tint */
-    --accent-foreground: 262 83% 58%;
+    --accent: 4 90% 96%; /* Very subtle red tint */
+    --accent-foreground: 4 90% 21%;
     
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 0 0% 90%;
-    --input: 0 0% 96%;
-    --ring: 262 83% 58%;
+    --border: 4 20% 90%;
+    --input: 44 100% 95%;
+    --ring: 4 90% 21%;
     
     --radius: 0.75rem;
 
-    --chart-1: 262 83% 58%;
-    --chart-2: 280 65% 60%;
-    --chart-3: 245 58% 51%;
-    --chart-4: 292 84% 61%;
-    --chart-5: 270 91% 65%;
+    --chart-1: 4 90% 21%;
+    --chart-2: 4 70% 30%;
+    --chart-3: 4 60% 40%;
+    --chart-4: 4 50% 50%;
+    --chart-5: 4 40% 60%;
   }
 
   .dark {
-    /* Pure black background with subtle purple accents */
-    --background: 0 0% 0%; /* Pure black */
+    /* Dark mode with red accents */
+    --background: 0 0% 8%; /* Very dark gray */
     --foreground: 0 0% 95%; /* Almost white text */
     
-    --card: 0 0% 4%; /* Very dark gray for cards */
+    --card: 0 0% 10%; /* Slightly lighter gray for cards */
     --card-foreground: 0 0% 95%;
     
-    --popover: 0 0% 4%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 95%;
     
-    --primary: 262 83% 58%; /* Vibrant purple accent */
+    --primary: 4 90% 35%; /* A slightly brighter red for dark mode */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 0 0% 8%; /* Dark gray */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 44 100% 95%; /* Creamy Yellow: #FFF0C4 */
+    --secondary-foreground: 4 90% 8%;
     
-    --muted: 0 0% 8%;
+    --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
     
-    --accent: 262 83% 18%; /* Dark purple accent */
-    --accent-foreground: 262 83% 95%;
+    --accent: 4 90% 15%; /* Dark red accent */
+    --accent-foreground: 0 0% 95%;
     
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 95%;
     
-    --border: 0 0% 15%; /* Subtle gray borders */
-    --input: 0 0% 8%;
-    --ring: 262 83% 58%;
+    --border: 0 0% 20%; /* Subtle gray borders */
+    --input: 0 0% 15%;
+    --ring: 4 90% 35%;
 
-    --chart-1: 262 83% 58%;
-    --chart-2: 280 65% 60%;
-    --chart-3: 245 58% 51%;
-    --chart-4: 292 84% 61%;
-    --chart-5: 270 91% 65%;
+    --chart-1: 4 90% 35%;
+    --chart-2: 4 70% 45%;
+    --chart-3: 4 60% 55%;
+    --chart-4: 4 50% 65%;
+    --chart-5: 4 40% 75%;
   }
 }
 
