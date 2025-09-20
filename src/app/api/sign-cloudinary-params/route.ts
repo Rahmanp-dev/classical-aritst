@@ -2,34 +2,36 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from 'next/server';
 
-// Configure Cloudinary with your credentials
-// These are server-side only and should not be prefixed with NEXT_PUBLIC_
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Note: CLOUDINARY_CLOUD_NAME is used here, NOT the one with NEXT_PUBLIC_
+// This is because this is a server-side route.
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
 export async function POST(request: Request) {
+  // Check if server-side credentials are provided for signed uploads
+  if (!apiKey || !apiSecret || !cloudName) {
+    return new NextResponse(
+      JSON.stringify({
+          success: false,
+          message: "Cloudinary credentials for signed uploads are not configured on the server. Unsigned uploads will be attempted.",
+      }),
+      { status: 400, headers: { 'content-type': 'application/json' } }
+    );
+  }
+
+  // If credentials are provided, proceed with signing
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+  });
+
   try {
     const body = await request.json();
     const { paramsToSign } = body;
 
-    // Check if server-side credentials are provided for signed uploads
-    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET || !process.env.CLOUDINARY_CLOUD_NAME) {
-      // If not, we cannot generate a signature.
-      // The Cloudinary widget will automatically attempt an unsigned upload.
-      return new NextResponse(
-        JSON.stringify({
-            success: false,
-            message: "Cloudinary credentials for signed uploads are not configured on the server.",
-        }),
-        { status: 400, headers: { 'content-type': 'application/json' } }
-      );
-    }
-
-    // If credentials are provided, sign the request
-    const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
+    const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret);
     
     return NextResponse.json({ signature });
 
@@ -46,5 +48,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-    

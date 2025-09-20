@@ -168,6 +168,9 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
+  // This object configures the upload widget.
+  // It will attempt signed uploads by default. If server-side keys are missing,
+  // the signing endpoint will fail, and the widget will fall back to unsigned uploads.
   const uploadWidgetOptions = {
     signatureEndpoint: "/api/sign-cloudinary-params",
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
@@ -204,10 +207,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Cloudinary is not fully configured</AlertTitle>
                 <AlertDescription>
-                  To enable image and file uploads, you must set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` in your environment variables. 
-                  For secure signed uploads, also add `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET`. Without these, the system will attempt to use unsigned uploads.
+                  To enable image and file uploads, you must set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and a corresponding `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your environment variables. 
+                  For secure signed uploads, also add `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, and `CLOUDINARY_CLOUD_NAME`.
                   <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
-                    <code>{`# Required for all uploads:\nNEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nNEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your_unsigned_preset"\n\n# Optional for secure signed uploads:\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
+                    <code>{`# Required for all uploads:\nNEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nNEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your_unsigned_preset"\n\n# Required for secure signed uploads:\nCLOUDINARY_CLOUD_NAME="your_cloud_name"\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
                   </pre>
                   You can get these from your <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary dashboard</a>.
                 </AlertDescription>
@@ -641,5 +644,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
