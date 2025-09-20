@@ -120,7 +120,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
 
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const isSignedUploadEnabled = !!(process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
@@ -170,7 +169,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   };
 
   const uploadWidgetOptions = {
-    signatureEndpoint: isSignedUploadEnabled ? "/api/sign-cloudinary-params" : undefined,
+    signatureEndpoint: "/api/sign-cloudinary-params",
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
   };
 
@@ -203,11 +202,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
             {!isCloudinaryEnabled && (
               <Alert className="mb-8">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>Cloudinary is not configured</AlertTitle>
+                <AlertTitle>Cloudinary is not fully configured</AlertTitle>
                 <AlertDescription>
-                  To enable image and file uploads, you need to add your Cloudinary credentials to your environment variables. Create a file named `.env` in the root of your project and add the following:
+                  To enable image and file uploads, you must set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` in your environment variables. 
+                  For secure signed uploads, also add `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET`. Without these, the system will attempt to use unsigned uploads.
                   <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
-                    <code>{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
+                    <code>{`# Required for all uploads:\nNEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nNEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your_unsigned_preset"\n\n# Optional for secure signed uploads:\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
                   </pre>
                   You can get these from your <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary dashboard</a>.
                 </AlertDescription>
@@ -486,7 +486,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <FormField control={form.control} name={`socialLinks.${index}.platform`} render={({ field }) => (
                               <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="Instagram" /></FormControl><FormMessage /></FormItem>
                             )} />
-                           
+                            <FormField control={form.control} name={`socialLinks.${index}.url`} render={({ field }) => (
+                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name={`socialLinks.${index}.icon`} render={({ field }) => (
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram, twitter, facebook" /></FormControl><FormMessage /></FormItem>
+                            )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
@@ -636,3 +641,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
