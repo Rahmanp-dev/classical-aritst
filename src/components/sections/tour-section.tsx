@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer';
 
 type TourImage = {
   imageUrl: string;
-  imageHint: string;
+  imageHint?: string;
   description?: string;
 }
 
