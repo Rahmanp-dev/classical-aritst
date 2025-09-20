@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CldUploadWidget } from 'next-cloudinary';
+import { CldUploadWidget, CldUploadWidgetPropsOptions } from 'next-cloudinary';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -98,6 +98,14 @@ type CloudinaryUploadResult = {
 function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; onLogout: () => void; }) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isCloudinaryEnabled, setIsCloudinaryEnabled] = useState(false);
+
+  useEffect(() => {
+    setIsCloudinaryEnabled(
+      !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+      !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    );
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -112,21 +120,47 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   
-  // Cloudinary configuration for UNSIGNED uploads
-  const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-  const handleImageUpload = (result: CloudinaryUploadResult, fieldName: any) => {
-      if (result.event === 'success' && result.info) {
-          form.setValue(fieldName, result.info.secure_url, { shouldValidate: true });
-          toast({ title: 'Image Uploaded', description: 'The image has been successfully updated.' });
+  const handleUploadSuccess = (result: any, fieldPath: string) => {
+    if (result.event === 'success') {
+      const secureUrl = result.info?.secure_url;
+      if (secureUrl) {
+        const currentImageValue = form.getValues(fieldPath as any) || {};
+        const newImageValue = {
+          ...currentImageValue,
+          imageUrl: secureUrl
+        };
+        form.setValue(fieldPath as any, newImageValue, { shouldValidate: true, shouldDirty: true });
+        toast({ title: 'Image Uploaded', description: 'The preview has been updated.' });
+      } else {
+        handleUploadError('Upload succeeded but no URL was returned.');
       }
+    }
   };
   
-  const handlePressKitUpload = (result: CloudinaryUploadResult) => {
-    if (result.event === 'success' && result.info) {
-        form.setValue('pressKitUrl', result.info.secure_url, { shouldValidate: true });
-        toast({ title: 'File Uploaded', description: 'The press kit has been successfully uploaded.' });
+  const handleFileSuccess = (result: any, fieldPath: string) => {
+    if (result.event === 'success') {
+      const secureUrl = result.info?.secure_url;
+      if (secureUrl) {
+        form.setValue(fieldPath as any, secureUrl, { shouldValidate: true, shouldDirty: true });
+        toast({ title: 'File Uploaded', description: 'The URL has been updated.' });
+      } else {
+        handleUploadError('Upload succeeded but no URL was returned.');
+      }
     }
+  };
+
+  const handleUploadError = (error: any) => {
+    console.error("Cloudinary Upload Error:", error);
+    toast({
+      title: 'Upload Failed',
+      description: `There was an error uploading the file. Check console for details. Error: ${error.message || 'Unknown error'}`,
+      variant: 'destructive',
+    });
+  };
+
+  const uploadOptions: CldUploadWidgetPropsOptions = {
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
+    uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -139,6 +173,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
         title: "Content Saved!",
         description: "Your website content has been successfully updated.",
       });
+      form.reset(values); // Resets the form's dirty state
     } else {
        toast({
         title: "Error Saving Content",
@@ -164,7 +199,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Button onClick={onLogout} variant="ghost">
                   <LogOut className="mr-2 h-4 w-4"/> Logout
                 </Button>
-                <Button type="submit" size="lg" disabled={isSaving}>
+                <Button type="submit" size="lg" disabled={isSaving || !form.formState.isDirty}>
                   {isSaving ? "Saving..." : "Save All Changes"}
                 </Button>
               </div>
@@ -177,7 +212,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Cloudinary is not configured</AlertTitle>
                 <AlertDescription>
-                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your environment variables.
+                  Image and file uploads are disabled. Please set both `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your .env file.
                 </AlertDescription>
               </Alert>
             )}
@@ -212,7 +247,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Hero Section</CardTitle><CardDescription>Manage hero image and call-to-action button links.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
                               <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
@@ -220,9 +255,15 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "heroImage.imageUrl")}>
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
-                              </CldUploadWidget>}
+                              {isCloudinaryEnabled && (
+                                <CldUploadWidget 
+                                  options={uploadOptions} 
+                                  onSuccess={(result) => handleUploadSuccess(result, "heroImage")} 
+                                  onError={handleUploadError}
+                                >
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                </CldUploadWidget>
+                              )}
                           </div>
                       </div>
                       <FormField control={form.control} name="heroCTAs.listenNow" render={({ field }) => (
@@ -263,7 +304,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <FormItem><FormLabel>Featured YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..." /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="startListeningUrl" render={({ field }) => (
-                        <FormItem><FormLabel>"Start Listening" Button URL</FormLabel><FormControl><Input {...field} placeholder="https://..." /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>"Start Listening" Button URL</FormLabel><FormControl><Input {...field} placeholder="https://..." /></FormControl><FormMessage /></FormMessage>
                       )} />
                       <h4 className="text-md font-semibold pt-4 border-t">Streaming Platforms</h4>
                       {musicLinkFields.map((field, index) => (
@@ -292,7 +333,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>About Section</CardTitle><CardDescription>Manage the artist portrait, stats, and press kit.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
                        <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
                               <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
@@ -300,9 +341,15 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "artistImage.imageUrl")}>
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
-                              </CldUploadWidget>}
+                              {isCloudinaryEnabled && (
+                                <CldUploadWidget 
+                                  options={uploadOptions} 
+                                  onSuccess={(r) => handleUploadSuccess(r, "artistImage")}
+                                  onError={handleUploadError}
+                                >
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                </CldUploadWidget>
+                              )}
                           </div>
                       </div>
 
@@ -329,9 +376,17 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                           <FormLabel>Downloadable Press Kit URL</FormLabel>
                           <FormControl><Input {...field} placeholder="https://..." /></FormControl>
                           <FormMessage />
-                          {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
-                              {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
-                          </CldUploadWidget></div>}
+                          {isCloudinaryEnabled && (
+                            <div className="pt-2">
+                              <CldUploadWidget 
+                                options={uploadOptions} 
+                                onSuccess={(r) => handleFileSuccess(r, "pressKitUrl")}
+                                onError={handleUploadError}
+                              >
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
+                              </CldUploadWidget>
+                            </div>
+                          )}
                         </FormItem>
                       )} />
                     </CardContent>
@@ -344,8 +399,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-4 pt-6">
                       {galleryItemFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
-                              <Image src={field.image.imageUrl} alt={field.title} fill className="object-cover"/>
+                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                              <Image src={form.watch(`galleryItems.${index}.image.imageUrl`)} alt={field.title} fill className="object-cover"/>
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                             <FormField control={form.control} name={`galleryItems.${index}.title`} render={({ field }) => (
@@ -359,8 +414,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             )} />
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
-                                <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, `galleryItems.${index}.image.imageUrl`)}>
-                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
+                                <CldUploadWidget 
+                                  options={uploadOptions} 
+                                  onSuccess={(result) => handleUploadSuccess(result, `galleryItems.${index}.image`)}
+                                  onError={handleUploadError}
+                                >
+                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
                               <Button type="button" variant="ghost" size="icon" onClick={() => removeGalleryItem(index)}>
@@ -407,16 +466,22 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       <CardHeader><CardTitle>Tour Section Image</CardTitle><CardDescription>Manage the image for the tour section map area.</CardDescription></CardHeader>
                       <CardContent className="pt-6">
                           <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
-                              <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden">
+                              <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
                                   <Image src={form.watch('tourImage.imageUrl')} alt="Tour section image" fill className="object-cover"/>
                               </div>
                               <div className="grid grid-cols-1 gap-4 flex-1">
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
                                       <FormItem><FormLabel>Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
-                                  {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "tourImage.imageUrl")}>
-                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
-                                  </CldUploadWidget>}
+                                  {isCloudinaryEnabled && (
+                                    <CldUploadWidget 
+                                      options={uploadOptions} 
+                                      onSuccess={(r) => handleUploadSuccess(r, "tourImage")}
+                                      onError={handleUploadError}
+                                    >
+                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                    </CldUploadWidget>
+                                  )}
                               </div>
                           </div>
                       </CardContent>
