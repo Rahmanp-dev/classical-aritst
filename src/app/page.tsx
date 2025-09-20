@@ -37,7 +37,7 @@ export default async function Home() {
           stats={content.aboutStats}
           pressKitUrl={content.pressKitUrl}
         />
-        <ContactSection />
+        <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 
         socialLinks={content.socialLinks}
@@ -47,5 +47,3 @@ export default async function Home() {
     </div>
   );
 }
-
-    

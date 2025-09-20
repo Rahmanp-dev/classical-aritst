@@ -74,6 +74,11 @@ const formSchema = z.object({
   })),
   tourImage: imageSchema,
 
+  contact: z.object({
+    email: z.string().email(),
+    phone: z.string(),
+    location: z.string(),
+  }),
 });
 
 
@@ -148,5 +153,3 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
-
-    

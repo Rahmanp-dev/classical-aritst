@@ -93,6 +93,11 @@ const formSchema = z.object({
   })),
   tourImage: imageSchema,
 
+  contact: z.object({
+    email: z.string().email(),
+    phone: z.string(),
+    location: z.string(),
+  }),
 });
 
 type CloudinaryUploadResult = {
@@ -168,9 +173,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
-  // This object configures the upload widget.
-  // It will attempt signed uploads by default. If server-side keys are missing,
-  // the signing endpoint will fail, and the widget will fall back to unsigned uploads.
   const uploadWidgetOptions = {
     signatureEndpoint: "/api/sign-cloudinary-params",
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
@@ -223,6 +225,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <TabsTrigger value="about">About Section</TabsTrigger>
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
                 <TabsTrigger value="tour">Tour</TabsTrigger>
+                <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="nav">Navigation & Footer</TabsTrigger>
               </TabsList>
 
@@ -431,7 +434,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>Venue</FormLabel><FormControl><Input {...field} placeholder="The Grand Hall" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`tourDates.${index}.ticketUrl`} render={({ field }) => (
-                              <FormItem><FormLabel>Ticket URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Ticket URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com" /></FormControl><FormMessage /></FormMessage>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeTourDate(index)} className="shrink-0"><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -457,6 +460,23 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               </div>
                           </div>
                       </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="contact">
+                  <Card>
+                    <CardHeader><CardTitle>Contact Information</CardTitle><CardDescription>Manage the contact details displayed on your site.</CardDescription></CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                      <FormField control={form.control} name="contact.email" render={({ field }) => (
+                        <FormItem><FormLabel>Contact Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      <FormField control={form.control} name="contact.phone" render={({ field }) => (
+                        <FormItem><FormLabel>Contact Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      <FormField control={form.control} name="contact.location" render={({ field }) => (
+                        <FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
@@ -493,7 +513,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`socialLinks.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram, twitter, facebook" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram, twitter, facebook" /></FormControl><FormMessage /></FormMessage>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>

@@ -155,6 +155,10 @@ export const defaultContent = {
     imageUrl: "https://picsum.photos/seed/map/1200/800",
     imageHint: "tour map"
   },
-};
 
-    
+  contact: {
+    email: "booking@acousticedge.com",
+    phone: "+1 (555) 123-4567",
+    location: "New York, NY",
+  },
+};

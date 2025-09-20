@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from 'react-hook-form';
@@ -10,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
-import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
+import { FloatingCard, FloatingSection } from '@/components/ui/floating-card';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 const formSchema = z.object({
@@ -20,8 +21,22 @@ const formSchema = z.object({
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
-export function ContactSection() {
+type ContactInfo = {
+  email: string;
+  phone: string;
+  location: string;
+}
+
+type ContactSectionProps = {
+  contactInfo?: ContactInfo;
+}
+
+export function ContactSection({ contactInfo }: ContactSectionProps) {
   const { toast } = useToast();
+  
+  // Provide default values to prevent crash if contactInfo is not passed
+  const currentContactInfo = contactInfo || { email: '', phone: '', location: '' };
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,23 +57,23 @@ export function ContactSection() {
     form.reset();
   }
 
-  const contactInfo = [
+  const staticContactInfo = [
     {
       icon: Mail,
       title: "Email",
-      value: "booking@acousticedge.com",
+      value: currentContactInfo.email,
       description: "For booking and general inquiries"
     },
     {
       icon: Phone,
       title: "Phone",
-      value: "+1 (555) 123-4567",
+      value: currentContactInfo.phone,
       description: "Available Mon-Fri 9AM-6PM"
     },
     {
       icon: MapPin,
       title: "Location",
-      value: "New York, NY",
+      value: currentContactInfo.location,
       description: "Available for worldwide performances"
     }
   ];
@@ -95,7 +110,7 @@ export function ContactSection() {
             Contact Information
           </motion.h3>
           
-          {contactInfo.map((info, index) => (
+          {staticContactInfo.map((info, index) => (
             <FloatingCard 
               key={info.title}
               variant="glass"
