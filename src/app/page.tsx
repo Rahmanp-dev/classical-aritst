@@ -11,42 +11,42 @@ import { getSiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 
 export default async function Home() {
-  const content = await getSiteContent();
+  const dbContent = await getSiteContent();
+  const content = { ...defaultContent, ...dbContent };
+
 
   return (
     <div className="flex flex-col min-h-dvh">
-      <Header navLinks={content.navLinks || defaultContent.navLinks} artistName={content.artistName || defaultContent.artistName} />
+      <Header navLinks={content.navLinks} artistName={content.artistName} />
       <main className="flex-1">
         <HeroSection 
-          heroImage={content.heroImage || defaultContent.heroImage}
-          artistName={content.artistName || defaultContent.artistName}
-          artistTagline={content.artistTagline || defaultContent.artistTagline}
-          heroCTAs={content.heroCTAs || defaultContent.heroCTAs}
-          infoCards={content.infoCards || defaultContent.infoCards}
+          heroImage={content.heroImage}
+          artistName={content.artistName}
+          artistTagline={content.artistTagline}
+          heroCTAs={content.heroCTAs}
+          infoCards={content.infoCards}
         />
-        <TourSection tourDates={content.tourDates || defaultContent.tourDates} tourImage={content.tourImage || defaultContent.tourImage} />
+        <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
         <MusicSection 
-          musicLinks={content.musicLinks || defaultContent.musicLinks}
-          featuredVideoUrl={content.featuredVideoUrl || defaultContent.featuredVideoUrl}
-          startListeningUrl={content.startListeningUrl || defaultContent.startListeningUrl}
+          musicLinks={content.musicLinks}
+          featuredVideoUrl={content.featuredVideoUrl}
+          startListeningUrl={content.startListeningUrl}
         />
-        <GallerySection galleryItems={content.galleryItems || defaultContent.galleryItems} />
+        <GallerySection galleryItems={content.galleryItems} />
         <AboutSection 
-          artistImage={content.artistImage || defaultContent.artistImage}
-          artistName={content.artistName || defaultContent.artistName}
-          artistBio={content.artistBio || defaultContent.artistBio}
-          stats={content.aboutStats || defaultContent.aboutStats}
-          pressKitUrl={content.pressKitUrl || defaultContent.pressKitUrl}
+          artistImage={content.artistImage}
+          artistName={content.artistName}
+          artistBio={content.artistBio}
+          stats={content.aboutStats}
+          pressKitUrl={content.pressKitUrl}
         />
-        <ContactSection contactInfo={content.contact || defaultContent.contact} />
+        <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 
-        socialLinks={content.socialLinks || defaultContent.socialLinks}
-        navLinks={content.navLinks || defaultContent.navLinks}
-        artistName={content.artistName || defaultContent.artistName}
+        socialLinks={content.socialLinks}
+        navLinks={content.navLinks}
+        artistName={content.artistName}
       />
     </div>
   );
 }
-
-    

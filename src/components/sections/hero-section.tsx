@@ -13,7 +13,7 @@ type HeroProps = {
   heroImage: Omit<ImageType, "id" | "description">;
   artistName: string;
   artistTagline: string;
-  heroCTAs?: { listenNow: string; upcomingShows: string };
+  heroCTAs: { listenNow: string; upcomingShows: string };
   infoCards: InfoCard[];
 }
 
@@ -157,7 +157,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
                 size="lg"
                 className="relative btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 px-10 py-7 text-lg rounded-2xl shadow-2xl shadow-primary/25 overflow-hidden"
               >
-                <Link href={heroCTAs?.listenNow || '#'}>
+                <Link href={heroCTAs.listenNow}>
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="flex items-center gap-3">
                     <div className="beat-pulse"><Play className="w-6 h-6" /></div>
@@ -179,7 +179,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
                 variant="outline"
                 className="btn-glow-static glass-card hover:glass-card-strong text-white px-10 py-7 text-lg rounded-2xl shadow-2xl"
               >
-                <Link href={heroCTAs?.upcomingShows || '#'}>
+                <Link href={heroCTAs.upcomingShows}>
                   <Calendar className="mr-3 h-6 w-6" />
                   Upcoming Shows
                 </Link>
@@ -233,4 +233,3 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
     </section>
   );
 }
-    
