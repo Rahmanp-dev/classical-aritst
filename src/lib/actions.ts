@@ -8,7 +8,7 @@ import { defaultContent } from '@/lib/data';
 
 const imageSchema = z.object({
   imageUrl: z.string().url(),
-  imageHint: z.string(),
+  imageHint: z.string().optional(),
 });
 
 const formSchema = z.object({
@@ -100,7 +100,7 @@ export async function getSiteContent(): Promise<SiteContent> {
     let content = await collection.findOne({ _id: CONTENT_ID });
 
     if (!content) {
-      // If no content, insert default and return it
+      console.log("No content found in database. Inserting default content.");
       const docToInsert = { ...defaultContent, _id: CONTENT_ID };
       await collection.insertOne(docToInsert);
       // remove the _id before returning
@@ -110,7 +110,13 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     // remove the _id before returning
     const { _id, ...rest } = content;
-    return rest;
+    // ensure all fields from schema are present, using defaults for any missing ones.
+    const parsed = formSchema.safeParse(rest);
+    if(parsed.success){
+      return parsed.data;
+    }
+    console.warn("Database content is malformed. Merging with default content.");
+    return { ...defaultContent, ...rest };
 
   } catch (error) {
     console.error('Failed to fetch site content:', error);
@@ -121,24 +127,31 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(values: SiteContent) {
   if (!clientPromise) {
-    return { success: false, message: "Database is not configured. Cannot save content." };
+    const message = "Database is not configured. Cannot save content.";
+    console.error(`saveSiteContent: ${message}`);
+    return { success: false, message };
   }
   
   try {
+    const validatedData = formSchema.parse(values);
+    console.log("saveSiteContent: Data validated successfully.");
+
     const client = await clientPromise;
     const db = client.db();
     const collection = db.collection('content');
     
-    const validatedData = formSchema.parse(values);
-
-    await collection.updateOne(
+    console.log("saveSiteContent: Updating database with new content...");
+    const result = await collection.updateOne(
       { _id: CONTENT_ID },
       { $set: validatedData },
       { upsert: true }
     );
+    console.log(`saveSiteContent: Database update result:`, result);
+
     
     revalidatePath('/');
     revalidatePath('/admin');
+    console.log("saveSiteContent: Paths revalidated.");
     
     return { success: true, message: "Content saved successfully!" };
 
@@ -146,7 +159,7 @@ export async function saveSiteContent(values: SiteContent) {
     console.error("Failed to save site content:", error);
     let errorMessage = "An unknown error occurred.";
     if (error instanceof z.ZodError) {
-      errorMessage = "Validation failed: " + error.errors.map(e => e.message).join(', ');
+      errorMessage = "Validation failed: " + error.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ');
     } else if (error instanceof Error) {
       errorMessage = error.message;
     }
