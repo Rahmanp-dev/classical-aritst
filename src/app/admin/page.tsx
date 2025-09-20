@@ -6,85 +6,75 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import Image from 'next/image';
+import { CldUploadWidget } from 'next-cloudinary';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { getSiteContent, saveSiteContent, type SiteContent } from '@/lib/actions';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Upload, Eye, LogOut } from 'lucide-react';
-import { CldUploadWidget } from 'next-cloudinary';
-import Image from 'next/image';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Trash2, Upload, Eye, LogOut, Terminal } from 'lucide-react';
 
-// This is a placeholder for a real authentication system.
+// IMPORTANT: This is a placeholder for a real authentication system.
 // In a production app, you would use a secure method for admin access.
 export const DUMMY_ADMIN_PASSWORD = process.env.NEXT_PUBLIC_DUMMY_ADMIN_PASSWORD || "password123";
+const AUTH_STORAGE_KEY = 'admin-authenticated';
 
+// Define Zod schemas for validation
 const imageSchema = z.object({
   imageUrl: z.string().url("Must be a valid URL."),
-  imageHint: z.string(),
+  imageHint: z.string().optional(),
 });
 
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
   artistBio: z.string().min(1, 'Artist bio is required.'),
-  
   heroImage: imageSchema,
-  
   heroCTAs: z.object({
     listenNow: z.string().url("Must be a valid URL."),
     upcomingShows: z.string().url("Must be a valid URL."),
   }),
-
   infoCards: z.array(z.object({
     label: z.string().min(1, "Label is required."),
     value: z.string().min(1, "Value is required."),
     icon: z.string().min(1, "Icon name is required."),
   })).length(3, "There must be exactly 3 info cards."),
-
   musicLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
     icon: z.string().min(1, 'Icon name is required.'),
   })),
-
   featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
   startListeningUrl: z.string().url("Must be a valid URL."),
-
   galleryItems: z.array(z.object({
       id: z.string(),
       title: z.string().min(1, "Title is required."),
       description: z.string().min(1, "Description is required."),
       image: imageSchema,
   })),
-
   artistImage: imageSchema,
-
   aboutStats: z.array(z.object({
     label: z.string().min(1, "Label is required."),
     value: z.string().min(1, "Value is required."),
     icon: z.string().min(1, "Icon name is required."),
   })).length(3, "There must be exactly 3 stats."),
-
   pressKitUrl: z.string().url("Must be a valid URL for the downloadable file."),
-  
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
     icon: z.string().min(1, 'Icon name is required.'),
   })),
-
   navLinks: z.array(z.object({
     href: z.string().min(1, 'Href is required.'),
     label: z.string().min(1, 'Label is required.'),
   })),
-  
   tourDates: z.array(z.object({
     date: z.string().min(1, 'Date is required.'),
     venue: z.string().min(1, 'Venue is required.'),
@@ -92,7 +82,6 @@ const formSchema = z.object({
     ticketUrl: z.string().url('Must be a valid URL.'),
   })),
   tourImage: imageSchema,
-
   contact: z.object({
     email: z.string().email(),
     phone: z.string(),
@@ -101,12 +90,11 @@ const formSchema = z.object({
 });
 
 type CloudinaryUploadResult = {
-  info?: {
-    secure_url: string;
-  };
+  info?: { secure_url: string; };
   event: string;
 };
 
+// AdminDashboard: The main content management interface
 function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; onLogout: () => void; }) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
@@ -119,16 +107,33 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: musicLinkFields, append: appendMusicLink, remove: removeMusicLink } = useFieldArray({ control: form.control, name: "musicLinks" });
   const { fields: socialLinkFields, append: appendSocialLink, remove: removeSocialLink } = useFieldArray({ control: form.control, name: "socialLinks" });
   const { fields: navLinkFields, append: appendNavLink, remove: removeNavLink } = useFieldArray({ control: form.control, name: "navLinks" });
-  const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem, update: updateGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
+  const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
-
+  
+  // Cloudinary configuration
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const isSignedUpload = !!process.env.CLOUDINARY_API_KEY;
 
   const uploadWidgetOptions = {
-    signatureEndpoint: "/api/sign-cloudinary-params",
-    uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
+      ...(isSignedUpload && { signatureEndpoint: "/api/sign-cloudinary-params" }),
+      uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ml_default",
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  };
+
+  const handleImageUpload = (result: CloudinaryUploadResult, fieldName: any) => {
+      if (result.event === 'success' && result.info) {
+          form.setValue(fieldName, result.info.secure_url, { shouldValidate: true });
+          toast({ title: 'Image Uploaded', description: 'The image has been successfully updated.' });
+      }
+  };
+  
+  const handlePressKitUpload = (result: CloudinaryUploadResult) => {
+    if (result.event === 'success' && result.info) {
+        form.setValue('pressKitUrl', result.info.secure_url, { shouldValidate: true });
+        toast({ title: 'File Uploaded', description: 'The press kit has been successfully uploaded.' });
+    }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -139,7 +144,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     if (result.success) {
       toast({
         title: "Content Saved!",
-        description: "Your website content has been successfully updated in the database.",
+        description: "Your website content has been successfully updated.",
       });
     } else {
        toast({
@@ -149,34 +154,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
       });
     }
   }
-  
-  const handleGalleryImageUpload = (result: CloudinaryUploadResult, index: number) => {
-    if (result.event === 'success' && result.info) {
-        const currentItem = form.getValues(`galleryItems.${index}`);
-        updateGalleryItem(index, {
-            ...currentItem,
-            image: {
-                ...currentItem.image,
-                imageUrl: result.info.secure_url,
-            }
-        });
-        toast({ title: 'Image Uploaded', description: 'The image has been successfully uploaded and updated.' });
-    }
-  };
-  
-  const handleSingleImageUpload = (result: CloudinaryUploadResult, fieldName: "heroImage" | "artistImage" | "tourImage") => {
-    if (result.event === 'success' && result.info) {
-        form.setValue(`${fieldName}.imageUrl`, result.info.secure_url);
-        toast({ title: 'Image Uploaded', description: 'The image has been successfully uploaded and updated.' });
-    }
-  };
-  
-  const handlePressKitUpload = (result: CloudinaryUploadResult) => {
-    if (result.event === 'success' && result.info) {
-        form.setValue('pressKitUrl', result.info.secure_url);
-        toast({ title: 'File Uploaded', description: 'The press kit has been successfully uploaded.' });
-    }
-  };
 
   return (
     <div className="bg-muted/30 min-h-screen">
@@ -188,13 +165,11 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
               <div className="flex items-center gap-2">
                 <Button variant="outline" asChild>
                   <Link href="/" target="_blank">
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Site
+                    <Eye className="mr-2 h-4 w-4" /> View Site
                   </Link>
                 </Button>
                 <Button onClick={onLogout} variant="ghost">
-                  <LogOut className="mr-2 h-4 w-4"/>
-                   Logout
+                  <LogOut className="mr-2 h-4 w-4"/> Logout
                 </Button>
                 <Button type="submit" size="lg" disabled={isSaving}>
                   {isSaving ? "Saving..." : "Save All Changes"}
@@ -205,16 +180,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
           <main className="container mx-auto px-4 py-12">
             {!isCloudinaryEnabled && (
-              <Alert className="mb-8">
+              <Alert className="mb-8" variant="destructive">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>Cloudinary is not fully configured</AlertTitle>
+                <AlertTitle>Cloudinary is not configured</AlertTitle>
                 <AlertDescription>
-                  To enable image and file uploads, you must set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and a corresponding `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` in your environment variables. 
-                  For secure signed uploads, also add `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, and `CLOUDINARY_CLOUD_NAME`.
-                  <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
-                    <code>{`# Required for all uploads:\nNEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nNEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your_unsigned_preset"\n\n# Required for secure signed uploads:\nCLOUDINARY_CLOUD_NAME="your_cloud_name"\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
-                  </pre>
-                  You can get these from your <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary dashboard</a>.
+                  Image and file uploads are disabled. Please set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` in your environment variables.
+                  For secure uploads, you must also provide an upload preset or full server-side API credentials.
                 </AlertDescription>
               </Alert>
             )}
@@ -257,7 +228,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "heroImage.imageUrl")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -286,7 +257,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`infoCards.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Headphones, Radio, Volume2" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Headphones, Radio" /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                         </div>
@@ -307,13 +278,13 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`musicLinks.${index}.platform`} render={({ field }) => (
-                              <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="Spotify" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`musicLinks.${index}.url`} render={({ field }) => (
-                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://spotify.com" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`musicLinks.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="spotify, apple, youtube, soundcloud" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeMusicLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -337,7 +308,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "artistImage.imageUrl")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -354,7 +325,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`aboutStats.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Award, Globe, Music2" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Award, Globe" /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                         </div>
@@ -377,10 +348,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
                 <TabsContent value="gallery">
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Gallery Images</CardTitle>
-                      <CardDescription>Manage the images in your "Past Highlights" section.</CardDescription>
-                    </CardHeader>
+                    <CardHeader><CardTitle>Gallery Images</CardTitle><CardDescription>Manage the images in your "Past Highlights" section.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {galleryItemFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
@@ -399,7 +367,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             )} />
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
-                                <CldUploadWidget {...uploadWidgetOptions} onUpload={(result) => handleGalleryImageUpload(result as CloudinaryUploadResult, index)} >
+                                <CldUploadWidget {...uploadWidgetOptions} onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, `galleryItems.${index}.image.imageUrl`)}>
                                     {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
@@ -425,16 +393,16 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md relative">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`tourDates.${index}.date`} render={({ field }) => (
-                              <FormItem><FormLabel>Date</FormLabel><FormControl><Input {...field} placeholder="OCT 25, 2024" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`tourDates.${index}.city`} render={({ field }) => (
-                              <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} placeholder="Berlin" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField control={form.control} name={`tourDates.${index}.venue`} render={({ field }) => (
-                              <FormItem><FormLabel>Venue</FormLabel><FormControl><Input {...field} placeholder="The Grand Hall" /></FormControl><FormMessage /></FormItem>
+                             <FormField control={form.control} name={`tourDates.${index}.venue`} render={({ field }) => (
+                              <FormItem><FormLabel>Venue</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`tourDates.${index}.ticketUrl`} render={({ field }) => (
-                              <FormItem><FormLabel>Ticket URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com" /></FormControl><FormMessage /></FormMessage>
+                              <FormItem><FormLabel>Ticket URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeTourDate(index)} className="shrink-0"><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -452,9 +420,9 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               </div>
                               <div className="grid grid-cols-1 gap-4 flex-1">
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
-                                      <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                      <FormItem><FormLabel>Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
-                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
+                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "tourImage.imageUrl")}>
                                       {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                   </CldUploadWidget>}
                               </div>
@@ -488,10 +456,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`navLinks.${index}.label`} render={({ field }) => (
-                                <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="Home" /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`navLinks.${index}.href`} render={({ field }) => (
-                                <FormItem><FormLabel>Href</FormLabel><FormControl><Input {...field} placeholder="#home" /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Href</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeNavLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -507,13 +475,13 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`socialLinks.${index}.platform`} render={({ field }) => (
-                              <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="Instagram" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`socialLinks.${index}.url`} render={({ field }) => (
-                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormItem>
+                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`socialLinks.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram, twitter, facebook" /></FormControl><FormMessage /></FormMessage>
+                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -523,7 +491,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     </CardContent>
                   </Card>
                 </TabsContent>
-
               </div>
             </Tabs>
           </main>
@@ -533,29 +500,31 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   );
 }
 
-
+// LoadingSkeleton: Displayed while authentication or data loading is in progress.
 function LoadingSkeleton() {
     return (
-        <div className="container mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold font-headline mb-8">Admin Dashboard</h1>
-            <div className="space-y-8">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-64 w-full" />
-                <Skeleton className="h-64 w-full" />
-                <Skeleton className="h-20 w-full" />
+        <div className="flex items-center justify-center min-h-screen bg-background">
+            <div className="container mx-auto px-4 py-12">
+                <div className="space-y-8">
+                    <Skeleton className="h-16 w-1/3 mx-auto" />
+                    <Skeleton className="h-10 w-2/3 mx-auto" />
+                    <div className="grid grid-cols-3 gap-8 pt-12">
+                      <Skeleton className="h-64 w-full" />
+                      <Skeleton className="h-64 w-full" />
+                      <Skeleton className="h-64 w-full" />
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
 
-const AUTH_STORAGE_KEY = 'admin-authenticated';
-
+// AdminPage: The main export, handles authentication flow.
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [initialData, setInitialData] = useState<SiteContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
   const { toast } = useToast();
   
   const form = useForm({
@@ -565,26 +534,28 @@ export default function AdminPage() {
   
   useEffect(() => {
     try {
-      const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (storedAuth === 'true') {
+      if (localStorage.getItem(AUTH_STORAGE_KEY) === 'true') {
         setIsAuthenticated(true);
       }
     } catch (error) {
-        console.warn("Could not read auth state from localStorage");
+      console.warn("Could not read auth state from localStorage");
+    } finally {
+      setAuthChecked(true);
     }
-    setAuthChecked(true);
   }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
+      setIsLoading(true);
       getSiteContent()
         .then(data => {
           setInitialData(data);
-          setIsLoading(false);
         })
         .catch(err => {
             console.error(err);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to load site content.' });
+        })
+        .finally(() => {
             setIsLoading(false);
         });
     }
@@ -635,13 +606,8 @@ export default function AdminPage() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
-
                                 <FormControl>
-                                    <Input
-                                        type="password"
-                                        {...field}
-                                        placeholder="Enter admin password"
-                                    />
+                                    <Input type="password" {...field} placeholder="Enter admin password" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -664,3 +630,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
