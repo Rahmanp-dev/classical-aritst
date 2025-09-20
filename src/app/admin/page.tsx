@@ -119,10 +119,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
 
-
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const isSignedUploadEnabled = !!(process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
@@ -643,5 +641,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
