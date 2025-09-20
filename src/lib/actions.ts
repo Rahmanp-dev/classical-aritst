@@ -86,80 +86,123 @@ export type SiteContent = z.infer<typeof formSchema>;
 
 const CONTENT_ID = "main_content";
 
+// Correct deep merge utility that handles arrays properly
+function deepMerge(target: any, source: any): SiteContent {
+    const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
+
+    const output = { ...target };
+
+    if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach(key => {
+            if (isObject(source[key])) {
+                if (!(key in target)) {
+                    Object.assign(output, { [key]: source[key] });
+                } else {
+                    output[key] = deepMerge(target[key], source[key]);
+                }
+            } else if (Array.isArray(source[key])) {
+                // If the source has an array, prefer it.
+                output[key] = source[key];
+            }
+            else {
+                Object.assign(output, { [key]: source[key] });
+            }
+        });
+    }
+    return output as SiteContent;
+}
+
+
 export async function getSiteContent(): Promise<SiteContent> {
-  if (!clientPromise) {
-    console.warn("MongoDB not connected. Falling back to default content.");
+  if (!process.env.MONGODB_URI) {
+    console.warn("MongoDB not configured. Falling back to default content.");
     return defaultContent;
   }
   
   try {
     const client = await clientPromise;
+    if (!client) {
+      throw new Error("MongoDB client is not available.");
+    }
     const db = client.db();
-    const collection = db.collection<{ _id: string } & Partial<SiteContent>>('content');
+    const collection = db.collection('content');
     
-    let content = await collection.findOne({ _id: CONTENT_ID });
+    let dbContent = await collection.findOne({ _id: CONTENT_ID });
 
-    if (!content) {
+    if (!dbContent) {
       console.log("No content found in database. Inserting default content.");
       const docToInsert = { ...defaultContent, _id: CONTENT_ID };
       await collection.insertOne(docToInsert);
       const { _id, ...rest } = docToInsert;
-      return rest;
+       // Ensure the returned content conforms to the full structure
+      return deepMerge(defaultContent, rest);
     }
+    
+    const { _id, ...restOfDbContent } = dbContent;
 
-    const { _id, ...rest } = content;
-    // ensure all fields from schema are present, using defaults for any missing ones.
-    const mergedContent = { ...defaultContent, ...rest };
+    // Merge DB content with defaults to ensure all keys are present
+    const mergedContent = deepMerge(defaultContent, restOfDbContent);
+
     const parsed = formSchema.safeParse(mergedContent);
 
     if(parsed.success){
       return parsed.data;
     }
 
-    console.warn("Database content is malformed. Returning merged default content. Error:", parsed.error);
+    console.warn("Database content is malformed. Returning merged default content. Error:", parsed.error.flatten());
     return mergedContent;
 
   } catch (error) {
     console.error('Failed to fetch site content:', error);
-    // Fallback to default content on error
     return defaultContent;
   }
 }
 
 export async function saveSiteContent(values: SiteContent) {
-  if (!clientPromise) {
+  if (!process.env.MONGODB_URI) {
     const message = "Database is not configured. Cannot save content.";
     console.error(`saveSiteContent: ${message}`);
     return { success: false, message };
   }
   
   try {
+    // 1. Validate the incoming data first.
     const validatedData = formSchema.parse(values);
-    console.log("saveSiteContent: Data validated successfully.");
-
+    
+    // 2. Ensure connection to the database.
     const client = await clientPromise;
+    if (!client) {
+        throw new Error("MongoDB client could not be established.");
+    }
     const db = client.db();
     const collection = db.collection('content');
     
-    console.log("saveSiteContent: Updating database with new content...");
+    // 3. Perform the update operation with the validated data.
     const result = await collection.updateOne(
       { _id: CONTENT_ID },
       { $set: validatedData },
       { upsert: true }
     );
-    console.log(`saveSiteContent: Database update result:`, result);
-
     
+    // 4. Check if the update was successful.
+    if (result.modifiedCount === 0 && result.upsertedCount === 0 && result.matchedCount === 0) {
+        // This case can happen if the data is identical to what's in the DB.
+        // It's not a failure, but nothing was changed.
+        console.log("No changes to save to the database.");
+         return { success: true, message: "No new changes to save." };
+    }
+    
+    // 5. Revalidate paths to show the new content.
     revalidatePath('/');
     revalidatePath('/admin');
-    console.log("saveSiteContent: Paths revalidated.");
     
     return { success: true, message: "Content saved successfully!" };
 
   } catch (error) {
     console.error("Failed to save site content:", error);
-    let errorMessage = "An unknown error occurred.";
+    let errorMessage = "An unknown error occurred during save.";
     if (error instanceof z.ZodError) {
+      // Make the Zod error message more readable
       errorMessage = "Validation failed: " + error.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ');
     } else if (error instanceof Error) {
       errorMessage = error.message;

@@ -70,10 +70,10 @@ export const defaultContent = {
   ],
   
   musicLinks: [
-    { platform: 'Spotify', url: '#', icon: 'spotify' },
-    { platform: 'Apple Music', url: '#', icon: 'apple' },
-    { platform: 'Youtube', url: '#', icon: 'youtube' },
-    { platform: 'SoundCloud', url: '#', icon: 'soundcloud' },
+    { platform: 'Spotify', url: 'https://open.spotify.com', icon: 'spotify' },
+    { platform: 'Apple Music', url: 'https://music.apple.com', icon: 'apple' },
+    { platform: 'Youtube', url: 'https://youtube.com', icon: 'youtube' },
+    { platform: 'SoundCloud', url: 'https://soundcloud.com', icon: 'soundcloud' },
   ],
 
   featuredVideoUrl: "https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG",
@@ -132,9 +132,9 @@ export const defaultContent = {
   pressKitUrl: "/press-kit.pdf",
 
   socialLinks: [
-    { platform: 'Instagram', url: '#', icon: 'instagram' },
-    { platform: 'Twitter', url: '#', icon: 'twitter' },
-    { platform: 'Facebook', url: '#', icon: 'facebook' },
+    { platform: 'Instagram', url: 'https://instagram.com', icon: 'instagram' },
+    { platform: 'Twitter', url: 'https://twitter.com', icon: 'twitter' },
+    { platform: 'Facebook', url: 'https://facebook.com', icon: 'facebook' },
   ],
 
   navLinks: [
@@ -146,10 +146,10 @@ export const defaultContent = {
   ],
 
   tourDates: [
-    { date: 'OCT 25, 2024', venue: 'The Grand Hall', city: 'Berlin', ticketUrl: '#' },
-    { date: 'NOV 02, 2024', venue: 'Symphony House', city: 'London', ticketUrl: '#' },
-    { date: 'NOV 15, 2024', venue: 'Le Trianon', city: 'Paris', ticketUrl: '#' },
-    { date: 'DEC 01, 2024', venue: 'Carnegie Hall', city: 'New York', ticketUrl: '#' },
+    { date: 'OCT 25, 2024', venue: 'The Grand Hall', city: 'Berlin', ticketUrl: 'https://www.example.com' },
+    { date: 'NOV 02, 2024', venue: 'Symphony House', city: 'London', ticketUrl: 'https://www.example.com' },
+    { date: 'NOV 15, 2024', venue: 'Le Trianon', city: 'Paris', ticketUrl: 'https://www.example.com' },
+    { date: 'DEC 01, 2024', venue: 'Carnegie Hall', city: 'New York', ticketUrl: 'https://www.example.com' },
   ],
   tourImage: {
     imageUrl: "https://picsum.photos/seed/map/1200/800",
