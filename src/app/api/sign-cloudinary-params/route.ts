@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 // Configure Cloudinary with your credentials from environment variables
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { paramsToSign } = body;
 
-    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-        throw new Error("Cloudinary API Key or Secret is not configured.");
+    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET || !process.env.CLOUDINARY_CLOUD_NAME) {
+        throw new Error("Cloudinary API Key, Secret, or Cloud Name is not configured.");
     }
 
     const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);

@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getSiteContent, saveSiteContent, type SiteContent } from '@/lib/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Upload, Eye, LogOut } from 'lucide-react';
-import { CldUploadWidget, type CldUploadWidgetProps } from 'next-cloudinary';
+import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
@@ -169,13 +169,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     }
   };
 
-  const uploadWidgetProps: CldUploadWidgetProps = {
+  const uploadWidgetOptions = {
+    signatureEndpoint: isSignedUploadEnabled ? "/api/sign-cloudinary-params" : undefined,
     uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
   };
-
-  if (isSignedUploadEnabled) {
-    uploadWidgetProps.signatureEndpoint = "/api/sign-cloudinary-params";
-  }
 
   return (
     <div className="bg-muted/30 min-h-screen">
@@ -210,11 +207,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 <AlertDescription>
                   To enable image and file uploads, you need to add your Cloudinary credentials to your environment variables. Create a file named `.env` in the root of your project and add the following:
                   <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
-                    <code>{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"`}</code>
-                  </pre>
-                  For signed uploads (more secure), also add:
-                  <pre className="mt-2 rounded-md bg-muted p-2 text-sm">
-                    <code>{`CLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
+                    <code>{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"\nCLOUDINARY_API_KEY="your_api_key"\nCLOUDINARY_API_SECRET="your_api_secret"`}</code>
                   </pre>
                   You can get these from your <a href="https://cloudinary.com/users/register/free" target="_blank" rel="noopener noreferrer" className="underline">Cloudinary dashboard</a>.
                 </AlertDescription>
@@ -258,7 +251,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetProps} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "heroImage")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -338,7 +331,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
-                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetProps} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
+                              {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "artistImage")}>
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
@@ -367,7 +360,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                           <FormLabel>Downloadable Press Kit URL</FormLabel>
                           <FormControl><Input {...field} placeholder="https://..." /></FormControl>
                           <FormMessage />
-                          {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget {...uploadWidgetProps} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
+                          {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
                               {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
                           </CldUploadWidget></div>}
                         </FormItem>
@@ -400,7 +393,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             )} />
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
-                                <CldUploadWidget {...uploadWidgetProps} onUpload={(result) => handleGalleryImageUpload(result as CloudinaryUploadResult, index)} >
+                                <CldUploadWidget {...uploadWidgetOptions} onUpload={(result) => handleGalleryImageUpload(result as CloudinaryUploadResult, index)} >
                                     {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
@@ -455,7 +448,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
                                       <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
-                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetProps} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
+                                  {isCloudinaryEnabled && <CldUploadWidget {...uploadWidgetOptions} onUpload={(r) => handleSingleImageUpload(r as CloudinaryUploadResult, "tourImage")}>
                                       {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                   </CldUploadWidget>}
                               </div>
@@ -493,12 +486,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <FormField control={form.control} name={`socialLinks.${index}.platform`} render={({ field }) => (
                               <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="Instagram" /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField control={form.control} name={`socialLinks.${index}.url`} render={({ field }) => (
-                              <FormItem><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com" /></FormControl><FormMessage /></FormMessage>
-                            )} />
-                            <FormField control={form.control} name={`socialLinks.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="instagram, twitter, facebook" /></FormControl><FormMessage /></FormMessage>
-                            )} />
+                           
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => removeSocialLink(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
@@ -619,6 +607,7 @@ export default function AdminPage() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
+
                                 <FormControl>
                                     <Input
                                         type="password"
