@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -28,8 +28,8 @@ const AUTH_STORAGE_KEY = 'admin-authenticated';
 
 // Define Zod schemas for validation
 const imageSchema = z.object({
-  imageUrl: z.string().url("Must be a valid URL."),
-  imageHint: z.string().optional(),
+  imageUrl: z.string().url("Must be a valid URL.").default(''),
+  imageHint: z.string().optional().default(''),
 });
 
 const formSchema = z.object({
@@ -122,7 +122,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     console.error("Cloudinary Upload Error:", error);
     toast({
       title: 'Upload Failed',
-      description: `There was an error uploading the file. ${error?.message || 'Check console or Cloudinary settings.'}`,
+      description: `There was an error uploading the file. Check your Cloudinary configuration.`,
       variant: 'destructive',
     });
   };
@@ -138,7 +138,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
         } else { // For simple string fields like pressKitUrl
           form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
         }
-        toast({ title: 'Upload Successful', description: 'The image preview has been updated.' });
+        toast({ title: 'Upload Successful', description: 'Image preview updated.' });
       } else {
         handleUploadError({ message: 'Upload succeeded but no URL was returned.' });
       }
@@ -235,7 +235,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-6 pt-6">
                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch('heroImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Hero background" fill className="object-cover"/>
+                              {form.watch('heroImage')?.imageUrl && <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                               <FormLabel>Hero Background Image</FormLabel>
@@ -291,7 +291,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <FormItem><FormLabel>Featured YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..." /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="startListeningUrl" render={({ field }) => (
-                        <FormItem><FormLabel>"Start Listening" Button URL</FormLabel><FormControl><Input {...field} placeholder="https://..." /></FormControl><FormMessage /></FormMessage>
+                        <FormItem><FormLabel>"Start Listening" Button URL</FormLabel><FormControl><Input {...field} placeholder="https://..." /></FormControl><FormMessage /></FormItem>
                       )} />
                       <h4 className="text-md font-semibold pt-4 border-t">Streaming Platforms</h4>
                       {musicLinkFields.map((field, index) => (
@@ -321,7 +321,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-6 pt-6">
                        <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch('artistImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Artist portrait" fill className="object-cover"/>
+                              {form.watch('artistImage')?.imageUrl && <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                               <FormLabel>About Section Portrait</FormLabel>
@@ -387,7 +387,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       {galleryItemFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              <Image src={form.watch(`galleryItems.${index}.image`)?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt={field.title} fill className="object-cover"/>
+                              {form.watch(`galleryItems.${index}.image`)?.imageUrl && <Image src={form.watch(`galleryItems.${index}.image.imageUrl`)} alt={field.title} fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
                             <FormField control={form.control} name={`galleryItems.${index}.title`} render={({ field }) => (
@@ -454,7 +454,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       <CardContent className="pt-6">
                           <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                               <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                                  <Image src={form.watch('tourImage')?.imageUrl || 'https://placehold.co/600x400/EEE/31343C?text=Preview'} alt="Tour section image" fill className="object-cover"/>
+                                  {form.watch('tourImage')?.imageUrl && <Image src={form.watch('tourImage.imageUrl')} alt="Tour section image" fill className="object-cover"/>}
                               </div>
                               <div className="grid grid-cols-1 gap-4 flex-1">
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
@@ -674,3 +674,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
