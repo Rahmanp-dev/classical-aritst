@@ -28,15 +28,11 @@ type ContactInfo = {
 }
 
 type ContactSectionProps = {
-  contactInfo?: ContactInfo;
+  contactInfo: ContactInfo;
 }
 
 export function ContactSection({ contactInfo }: ContactSectionProps) {
   const { toast } = useToast();
-  
-  // Provide default values to prevent crash if contactInfo is not passed
-  const currentContactInfo = contactInfo || { email: '', phone: '', location: '' };
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,19 +57,19 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
     {
       icon: Mail,
       title: "Email",
-      value: currentContactInfo.email,
+      value: contactInfo.email,
       description: "For booking and general inquiries"
     },
     {
       icon: Phone,
       title: "Phone",
-      value: currentContactInfo.phone,
+      value: contactInfo.phone,
       description: "Available Mon-Fri 9AM-6PM"
     },
     {
       icon: MapPin,
       title: "Location",
-      value: currentContactInfo.location,
+      value: contactInfo.location,
       description: "Available for worldwide performances"
     }
   ];
