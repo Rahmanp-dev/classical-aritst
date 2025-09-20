@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -221,7 +221,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
                               {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "heroImage.imageUrl")}>
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
                       </div>
@@ -301,7 +301,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
                               {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "artistImage.imageUrl")}>
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                               </CldUploadWidget>}
                           </div>
                       </div>
@@ -330,7 +330,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                           <FormControl><Input {...field} placeholder="https://..." /></FormControl>
                           <FormMessage />
                           {isCloudinaryEnabled && <div className="pt-2"><CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handlePressKitUpload(r as CloudinaryUploadResult)}>
-                              {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
+                              {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
                           </CldUploadWidget></div>}
                         </FormItem>
                       )} />
@@ -360,7 +360,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <div className='flex gap-2'>
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(result) => handleImageUpload(result as CloudinaryUploadResult, `galleryItems.${index}.image.imageUrl`)}>
-                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
+                                    {({ open }) => (<Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>)}
                                 </CldUploadWidget>
                               )}
                               <Button type="button" variant="ghost" size="icon" onClick={() => removeGalleryItem(index)}>
@@ -415,7 +415,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                       <FormItem><FormLabel>Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
                                   {isCloudinaryEnabled && <CldUploadWidget uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} onUpload={(r) => handleImageUpload(r as CloudinaryUploadResult, "tourImage.imageUrl")}>
-                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open && open()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                   </CldUploadWidget>}
                               </div>
                           </div>
@@ -622,3 +622,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
