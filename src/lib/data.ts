@@ -30,7 +30,7 @@ export type GalleryItem = {
   description: string;
   image: {
     imageUrl: string;
-    imageHint: string;
+    imageHint?: string;
   };
 };
 
