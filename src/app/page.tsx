@@ -20,14 +20,22 @@ export default async function Home() {
           heroImage={content.heroImage}
           artistName={content.artistName}
           artistTagline={content.artistTagline}
+          heroCTAs={content.heroCTAs}
+          infoCards={content.infoCards}
         />
         <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
-        <MusicSection musicLinks={content.musicLinks} />
+        <MusicSection 
+          musicLinks={content.musicLinks}
+          featuredVideoUrl={content.featuredVideoUrl}
+          startListeningUrl={content.startListeningUrl}
+        />
         <GallerySection galleryItems={content.galleryItems} />
         <AboutSection 
           artistImage={content.artistImage}
           artistName={content.artistName}
           artistBio={content.artistBio}
+          stats={content.aboutStats}
+          pressKitUrl={content.pressKitUrl}
         />
         <ContactSection />
       </main>
@@ -39,3 +47,5 @@ export default async function Home() {
     </div>
   );
 }
+
+    

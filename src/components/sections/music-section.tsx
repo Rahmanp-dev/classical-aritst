@@ -7,6 +7,7 @@ import { Youtube, Play, ExternalLink } from 'lucide-react';
 import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
+import Link from 'next/link';
 
 const iconMap = {
   spotify: SpotifyIcon,
@@ -24,9 +25,11 @@ const platformColors = {
 
 type MusicProps = {
   musicLinks: MusicLink[];
+  featuredVideoUrl: string;
+  startListeningUrl: string;
 }
 
-export function MusicSection({ musicLinks }: MusicProps) {
+export function MusicSection({ musicLinks, featuredVideoUrl, startListeningUrl }: MusicProps) {
   return (
     <FloatingSection id="music" background="gradient">
       {/* Section Header */}
@@ -108,14 +111,13 @@ export function MusicSection({ musicLinks }: MusicProps) {
           <div className="aspect-video bg-gradient-to-br from-background to-background/50 rounded-lg overflow-hidden relative group">
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG"
+              src={featuredVideoUrl}
               title="Latest Performance"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
             
-            {/* Overlay for loading state */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-600/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <div className="bg-black/50 backdrop-blur-sm rounded-full p-4">
                 <Play className="w-12 h-12 text-white" />
@@ -137,13 +139,18 @@ export function MusicSection({ musicLinks }: MusicProps) {
           Join thousands of listeners experiencing classical music reimagined
         </p>
         <Button 
+          asChild
           size="lg" 
           className="btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
         >
-          <Play className="mr-2 h-5 w-5" />
-          Start Listening
+          <Link href={startListeningUrl}>
+            <Play className="mr-2 h-5 w-5" />
+            Start Listening
+          </Link>
         </Button>
       </motion.div>
     </FloatingSection>
   );
 }
+
+    

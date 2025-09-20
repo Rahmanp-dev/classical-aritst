@@ -3,8 +3,8 @@
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Download, Award, Globe, Music2 } from 'lucide-react';
-import type { ImageType } from '@/lib/data';
+import { Download, Award, Globe, Music2, Sparkles } from 'lucide-react';
+import type { ImageType, AboutStat } from '@/lib/data';
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
 
@@ -12,14 +12,18 @@ type AboutProps = {
   artistImage: Omit<ImageType, "id" | "description">;
   artistName: string;
   artistBio: string;
+  stats: AboutStat[];
+  pressKitUrl: string;
 }
 
-export function AboutSection({ artistImage, artistName, artistBio }: AboutProps) {
-  const stats = [
-    { icon: Award, label: 'Awards', value: '12+' },
-    { icon: Globe, label: 'Countries', value: '30+' },
-    { icon: Music2, label: 'Albums', value: '8' },
-  ];
+const iconMap: { [key: string]: React.ElementType } = {
+  Award,
+  Globe,
+  Music2,
+  Sparkles,
+};
+
+export function AboutSection({ artistImage, artistName, artistBio, stats, pressKitUrl }: AboutProps) {
 
   return (
     <FloatingSection id="about" background="subtle">
@@ -85,19 +89,22 @@ export function AboutSection({ artistImage, artistName, artistBio }: AboutProps)
             viewport={{ once: true }}
           >
             <FloatingGrid cols={3} gap="md">
-              {stats.map((stat, index) => (
-                <FloatingCard 
-                  key={stat.label}
-                  variant="minimal"
-                  size="sm"
-                  delay={0.6 + index * 0.1}
-                  className="text-center hover:bg-accent/5"
-                >
-                  <stat.icon className="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform duration-300" />
-                  <div className="text-2xl font-bold font-headline text-foreground">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground uppercase tracking-wide">{stat.label}</div>
-                </FloatingCard>
-              ))}
+              {stats.map((stat, index) => {
+                const IconComponent = iconMap[stat.icon] || Sparkles;
+                return (
+                  <FloatingCard 
+                    key={stat.label}
+                    variant="minimal"
+                    size="sm"
+                    delay={0.6 + index * 0.1}
+                    className="text-center hover:bg-accent/5"
+                  >
+                    <IconComponent className="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="text-2xl font-bold font-headline text-foreground">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground uppercase tracking-wide">{stat.label}</div>
+                  </FloatingCard>
+                )
+              })}
             </FloatingGrid>
           </motion.div>
 
@@ -113,7 +120,7 @@ export function AboutSection({ artistImage, artistName, artistBio }: AboutProps)
               size="lg" 
               className="btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
             >
-              <a href="/press-kit.pdf" download>
+              <a href={pressKitUrl} download target="_blank" rel="noopener noreferrer">
                 <Download className="mr-2 h-5 w-5" />
                 Download Press Kit
               </a>
@@ -124,3 +131,5 @@ export function AboutSection({ artistImage, artistName, artistBio }: AboutProps)
     </FloatingSection>
   );
 }
+
+    

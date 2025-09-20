@@ -15,36 +15,67 @@ const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
   artistBio: z.string().min(1, 'Artist bio is required.'),
+  
   heroImage: imageSchema,
-  artistImage: imageSchema,
-  tourImage: imageSchema,
-  tourDates: z.array(z.object({
-    date: z.string().min(1, 'Date is required.'),
-    venue: z.string().min(1, 'Venue is required.'),
-    city: z.string().min(1, 'City is required.'),
-    ticketUrl: z.string().url('Must be a valid URL.'),
-  })),
+  
+  heroCTAs: z.object({
+    listenNow: z.string().url("Must be a valid URL."),
+    upcomingShows: z.string().url("Must be a valid URL."),
+  }),
+
+  infoCards: z.array(z.object({
+    label: z.string().min(1, "Label is required."),
+    value: z.string().min(1, "Value is required."),
+    icon: z.string().min(1, "Icon name is required."),
+  })).length(3, "There must be exactly 3 info cards."),
+
   musicLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
     icon: z.string().min(1, 'Icon name is required.'),
   })),
-  socialLinks: z.array(z.object({
-    platform: z.string().min(1, 'Platform is required.'),
-    url: z.string().url('Must be a valid URL.'),
-    icon: z.string().min(1, 'Icon name is required.'),
-  })),
-  navLinks: z.array(z.object({
-    href: z.string().min(1, 'Href is required.'),
-    label: z.string().min(1, 'Label is required.'),
-  })),
+
+  featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
+  startListeningUrl: z.string().url("Must be a valid URL."),
+
   galleryItems: z.array(z.object({
       id: z.string(),
       title: z.string().min(1, "Title is required."),
       description: z.string().min(1, "Description is required."),
       image: imageSchema,
   })),
+
+  artistImage: imageSchema,
+
+  aboutStats: z.array(z.object({
+    label: z.string().min(1, "Label is required."),
+    value: z.string().min(1, "Value is required."),
+    icon: z.string().min(1, "Icon name is required."),
+  })).length(3, "There must be exactly 3 stats."),
+
+  pressKitUrl: z.string().url("Must be a valid URL for the downloadable file."),
+  
+  socialLinks: z.array(z.object({
+    platform: z.string().min(1, 'Platform is required.'),
+    url: z.string().url('Must be a valid URL.'),
+    icon: z.string().min(1, 'Icon name is required.'),
+  })),
+
+  navLinks: z.array(z.object({
+    href: z.string().min(1, 'Href is required.'),
+    label: z.string().min(1, 'Label is required.'),
+  })),
+  
+  tourDates: z.array(z.object({
+    date: z.string().min(1, 'Date is required.'),
+    venue: z.string().min(1, 'Venue is required.'),
+    city: z.string().min(1, 'City is required.'),
+    ticketUrl: z.string().url('Must be a valid URL.'),
+  })),
+  tourImage: imageSchema,
+
 });
+
 
 export type SiteContent = z.infer<typeof formSchema>;
 
@@ -117,3 +148,5 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
+
+    
