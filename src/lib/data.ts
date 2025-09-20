@@ -3,7 +3,7 @@ export type ImageType = {
   id: string;
   description: string;
   imageUrl: string;
-  imageHint: string;
+  imageHint?: string;
 };
 
 export type TourDate = {
