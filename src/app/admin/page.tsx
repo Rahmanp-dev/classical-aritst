@@ -126,6 +126,11 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
   const isCloudinaryEnabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
+  const uploadWidgetOptions = {
+    signatureEndpoint: "/api/sign-cloudinary-params",
+    uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     const result = await saveSiteContent(values);
@@ -171,11 +176,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
         form.setValue('pressKitUrl', result.info.secure_url);
         toast({ title: 'File Uploaded', description: 'The press kit has been successfully uploaded.' });
     }
-  };
-
-  const uploadWidgetOptions = {
-    signatureEndpoint: "/api/sign-cloudinary-params",
-    uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "next-cloudinary-unsigned"
   };
 
   return (
