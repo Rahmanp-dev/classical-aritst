@@ -7,6 +7,7 @@ import { MusicSection } from "@/components/sections/music-section";
 import { GallerySection } from "@/components/sections/gallery-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { ContactSection } from "@/components/sections/contact-section";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 
@@ -24,16 +25,25 @@ function deepMerge(target: any, source: any): SiteContent {
     const targetValue = target[key];
     const sourceValue = source[key];
 
-    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
+    if (Array.isArray(sourceValue)) {
       // For arrays, we will prefer the source (database) value if it exists and is an array.
-      // If you wanted to merge array contents, this logic would be different.
       output[key] = sourceValue;
     } else if (isObject(targetValue) && isObject(sourceValue)) {
       output[key] = deepMerge(targetValue, sourceValue);
     } else {
+      // This handles cases where the source value is primitive or the target doesn't have the key.
+      // It also handles the case where the db has a value but the default might be an object (edge case).
       output[key] = sourceValue;
     }
   });
+
+  // Ensure all keys from defaultContent are present, even if not in source
+  for (const key in defaultContent) {
+    if (!output.hasOwnProperty(key)) {
+      output[key] = (defaultContent as any)[key];
+    }
+  }
+
 
   return output as SiteContent;
 }
@@ -61,8 +71,11 @@ export default async function Home() {
           musicLinks={content.musicLinks}
           featuredVideoUrl={content.featuredVideoUrl}
           startListeningUrl={content.startListeningUrl}
+          youtubeVideos={content.youtubeVideos}
+          instagramReels={content.instagramReels}
         />
         <GallerySection galleryItems={content.galleryItems} />
+        <TestimonialsSection testimonials={content.testimonials} />
         <AboutSection 
           artistImage={content.artistImage}
           artistName={content.artistName}
