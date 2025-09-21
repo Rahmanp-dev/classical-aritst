@@ -173,8 +173,9 @@ export const defaultContent = {
 
   navLinks: [
     { href: '#tour', label: 'Tour' },
-    { href: '#music', label: 'Music' },
+    { href: '#music', label: 'Media' },
     { href: '#gallery', label: 'Gallery' },
+    { href: '#testimonials', label: 'Acclaim' },
     { href: '#about', label: 'About' },
     { href: '#contact', label: 'Contact' },
   ],
@@ -202,3 +203,5 @@ export const defaultContent = {
     location: "New York, NY",
   },
 };
+
+    

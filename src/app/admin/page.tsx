@@ -188,9 +188,9 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b">
-            <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-              <h1 className="text-2xl font-bold font-headline">Admin Dashboard</h1>
-              <div className="flex items-center gap-2">
+            <div className="container mx-auto px-4 h-auto md:h-20 flex flex-col md:flex-row items-start md:items-center justify-between py-2 md:py-0">
+              <h1 className="text-2xl font-bold font-headline mb-2 md:mb-0">Admin Dashboard</h1>
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button variant="outline" asChild>
                   <Link href="/" target="_blank">
                     <Eye className="mr-2 h-4 w-4" /> View Site
@@ -217,7 +217,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
               </Alert>
             )}
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="flex flex-wrap h-auto">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:flex h-auto">
                 <TabsTrigger value="general">General & Hero</TabsTrigger>
                 <TabsTrigger value="links">Music & Links</TabsTrigger>
                 <TabsTrigger value="media">Media</TabsTrigger>
@@ -284,7 +284,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardContent className="space-y-4 pt-6">
                       {infoCardFields.map((field, index) => (
                         <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`infoCards.${index}.label`} render={({ field }) => (
                               <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -307,8 +307,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       )} />
                       <h4 className="text-md font-semibold pt-4 border-t">Streaming Platforms</h4>
                       {musicLinkFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`musicLinks.${index}.platform`} render={({ field }) => (
                               <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -337,8 +337,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                       
                        <h4 className="text-md font-semibold pt-4 border-t">YouTube Video Collection</h4>
                        {youtubeVideoFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`youtubeVideos.${index}.title`} render={({ field }) => (
                               <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -354,8 +354,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
                        <h4 className="text-md font-semibold pt-4 border-t">Instagram Reels Collection</h4>
                        {instagramReelFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`instagramReels.${index}.caption`} render={({ field }) => (
                               <FormItem><FormLabel>Caption</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -486,8 +486,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Tour Dates</CardTitle><CardDescription>Add or remove upcoming tour dates.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {tourDateFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md relative">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md relative">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`tourDates.${index}.date`} render={({ field }) => (
                               <FormItem><FormLabel>Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -538,12 +538,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Testimonials</CardTitle><CardDescription>Manage quotes and reviews from critics and fans.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {testimonialFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md relative">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md relative">
                           <div className="grid grid-cols-1 gap-4 flex-1">
                              <FormField control={form.control} name={`testimonials.${index}.quote`} render={({ field }) => (
                               <FormItem><FormLabel>Quote</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <FormField control={form.control} name={`testimonials.${index}.author`} render={({ field }) => (
                                 <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
@@ -582,8 +582,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Header Navigation</CardTitle><CardDescription>Manage the main site navigation links in the header.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {navLinkFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
                             <FormField control={form.control} name={`navLinks.${index}.label`} render={({ field }) => (
                                 <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -601,8 +601,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Footer Social Links</CardTitle><CardDescription>Links to social media profiles shown in the footer.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {socialLinkFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                        <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`socialLinks.${index}.platform`} render={({ field }) => (
                               <FormItem><FormLabel>Platform</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -637,7 +637,7 @@ function LoadingSkeleton() {
                 <div className="space-y-8">
                     <Skeleton className="h-16 w-1/3 mx-auto" />
                     <Skeleton className="h-10 w-2/3 mx-auto" />
-                    <div className="grid grid-cols-3 gap-8 pt-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12">
                       <Skeleton className="h-64 w-full" />
                       <Skeleton className="h-64 w-full" />
                       <Skeleton className="h-64 w-full" />
@@ -759,4 +759,6 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+    
+
     

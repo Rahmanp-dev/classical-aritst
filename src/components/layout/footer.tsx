@@ -42,11 +42,11 @@ export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 mb-12">
           
           {/* Brand Section */}
           <motion.div 
-            className="lg:col-span-1"
+            className="md:col-span-2 lg:col-span-1"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -125,7 +125,7 @@ export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
 
           {/* Newsletter */}
           <motion.div 
-            className="lg:col-span-2"
+            className="md:col-span-2 lg:col-span-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -169,7 +169,8 @@ export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
         >
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} {artistName}. All rights reserved. 
-            <span className="mx-2">•</span>
+            <span className="mx-2 hidden sm:inline-block">•</span>
+            <br className="sm:hidden" />
             Crafted with passion for musical excellence.
           </p>
         </motion.div>
@@ -177,3 +178,5 @@ export function Footer({ socialLinks, navLinks, artistName }: FooterProps) {
     </footer>
   );
 }
+
+    

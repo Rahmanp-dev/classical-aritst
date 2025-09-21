@@ -98,17 +98,17 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
             initial={{ opacity: 0, y: 30, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="inline-flex items-center gap-3 px-6 py-3 mb-8 glass-card-strong rounded-full group hover:scale-105 transition-all duration-300"
+            className="inline-flex items-center gap-3 px-4 py-2 sm:px-6 sm:py-3 mb-8 glass-card-strong rounded-full group hover:scale-105 transition-all duration-300"
           >
             <div className="beat-pulse">
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-sm font-medium text-white/90">Classical Music Reimagined</span>
+            <span className="text-xs sm:text-sm font-medium text-white/90">Classical Music Reimagined</span>
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
           </motion.div>
 
           <motion.h1 
-            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-8 font-headline relative"
+            className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-8 font-headline relative"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
@@ -122,7 +122,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
           </motion.h1>
 
           <motion.p 
-            className="text-lg md:text-xl lg:text-2xl max-w-4xl mx-auto mb-12 text-white/80 font-light leading-relaxed"
+            className="text-base md:text-xl lg:text-2xl max-w-4xl mx-auto mb-12 text-white/80 font-light leading-relaxed"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
@@ -142,20 +142,20 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
           </motion.div>
 
           <motion.div
-            className="flex flex-col lg:flex-row items-center justify-center gap-6 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
           >
             <motion.div 
-              className="group"
+              className="group w-full sm:w-auto"
               whileHover={{ scale: 1.05, y: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               <Button 
                 asChild 
                 size="lg"
-                className="relative btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 px-10 py-7 text-lg rounded-2xl shadow-2xl shadow-primary/25 overflow-hidden"
+                className="relative btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 px-10 py-7 text-base sm:text-lg rounded-2xl shadow-2xl shadow-primary/25 overflow-hidden w-full"
               >
                 <Link href={heroCTAs.listenNow}>
                   <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -169,7 +169,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
             </motion.div>
 
             <motion.div 
-              className="group"
+              className="group w-full sm:w-auto"
               whileHover={{ scale: 1.05, y: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
@@ -177,7 +177,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
                 asChild 
                 size="lg" 
                 variant="outline"
-                className="btn-glow-static glass-card hover:glass-card-strong text-white px-10 py-7 text-lg rounded-2xl shadow-2xl"
+                className="btn-glow-static glass-card hover:glass-card-strong text-white px-10 py-7 text-base sm:text-lg rounded-2xl shadow-2xl w-full"
               >
                 <Link href={heroCTAs.upcomingShows}>
                   <Calendar className="mr-3 h-6 w-6" />
@@ -187,7 +187,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
             </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             {infoCards.map((item, index) => {
                const IconComponent = iconMap[item.icon] || Sparkles;
                const colorClass = ["from-green-500 to-emerald-600", "from-orange-500 to-red-600", "from-blue-500 to-purple-600"][index % 3];
@@ -198,13 +198,13 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: 1.2 + index * 0.15, duration: 0.6 }}
                   whileHover={{ scale: 1.08, y: -8 }}
-                  className="group glass-card-strong rounded-2xl p-8 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer"
+                  className="group glass-card-strong rounded-2xl p-6 md:p-8 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer"
                 >
                   <div className={`bg-gradient-to-br ${colorClass} p-4 rounded-xl mb-4 mx-auto w-fit group-hover:scale-110 transition-transform duration-300`}>
                     <IconComponent className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-white/60 text-sm uppercase tracking-wide mb-2 font-semibold">{item.label}</h3>
-                  <p className="text-white font-bold text-xl group-hover:text-primary transition-colors duration-300">{item.value}</p>
+                  <p className="text-white font-bold text-lg sm:text-xl group-hover:text-primary transition-colors duration-300">{item.value}</p>
                 </motion.div>
               );
             })}
@@ -233,3 +233,5 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
     </section>
   );
 }
+
+    

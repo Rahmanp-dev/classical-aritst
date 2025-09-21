@@ -78,13 +78,13 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
     <FloatingSection id="contact" background="gradient">
       {/* Section Header */}
       <motion.div 
-        className="text-center mb-16"
+        className="text-center mb-12 md:mb-16"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl md:text-6xl font-bold font-headline mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
           Get In Touch
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -97,7 +97,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
         {/* Contact Info Cards */}
         <div className="lg:col-span-1 space-y-6">
           <motion.h3 
-            className="text-2xl font-bold font-headline mb-6"
+            className="text-2xl font-bold font-headline mb-6 hidden lg:block"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -120,7 +120,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-semibold text-foreground mb-1">{info.title}</h4>
-                  <p className="text-lg font-medium text-foreground/90 mb-1">{info.value}</p>
+                  <p className="text-lg font-medium text-foreground/90 mb-1 break-all">{info.value}</p>
                   <p className="text-sm text-muted-foreground">{info.description}</p>
                 </div>
               </div>
@@ -236,3 +236,5 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
     </FloatingSection>
   );
 }
+
+    
