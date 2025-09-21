@@ -5,6 +5,62 @@ import { z } from 'zod';
 import clientPromise from '@/lib/mongodb';
 import { revalidatePath } from 'next/cache';
 import { defaultContent } from '@/lib/data';
+import { Resend } from 'resend';
+import ContactFormEmail from '@/emails/contact-form-email';
+import * as React from 'react';
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const contactEmail = process.env.CONTACT_EMAIL;
+
+
+// Define the schema for the contact form
+const contactFormSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
+
+export async function sendContactMessage(values: z.infer<typeof contactFormSchema>) {
+  // Validate form values
+  const validatedFields = contactFormSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields. Please check your input." };
+  }
+  
+  if (!resend || !contactEmail) {
+    console.error("Resend API Key or Contact Email is not configured. Email sending is disabled.");
+    return { error: "The server is not configured to send emails. Please contact the site administrator." };
+  }
+
+  const { name, email, subject, message } = validatedFields.data;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `Contact Form <${contactEmail}>`,
+      to: contactEmail,
+      reply_to: email,
+      subject: `New Message from Website: ${subject}`,
+      react: React.createElement(ContactFormEmail, {
+        senderName: name,
+        senderEmail: email,
+        message,
+      }),
+    });
+
+    if (error) {
+      console.error("Resend API Error:", error);
+      return { error: "There was a problem sending your message. Please try again later." };
+    }
+
+    return { success: "Message sent successfully!" };
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    return { error: "An unexpected error occurred. Please try again later." };
+  }
+}
+
 
 const imageSchema = z.object({
   imageUrl: z.string().url(),
@@ -238,3 +294,5 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
+
+    

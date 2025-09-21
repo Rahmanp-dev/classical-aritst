@@ -4,6 +4,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTransition, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -12,7 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection } from '@/components/ui/floating-card';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { sendContactMessage } from '@/lib/actions';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -33,6 +35,7 @@ type ContactSectionProps = {
 
 export function ContactSection({ contactInfo }: ContactSectionProps) {
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,12 +48,32 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Message Sent!",
-      description: "Thanks for reaching out. We'll get back to you soon.",
+    startTransition(() => {
+      sendContactMessage(values)
+        .then((data) => {
+          if (data.error) {
+            toast({
+              title: "Error",
+              description: data.error,
+              variant: "destructive",
+            });
+          }
+          if (data.success) {
+            toast({
+              title: "Message Sent!",
+              description: "Thanks for reaching out. We'll get back to you soon.",
+            });
+            form.reset();
+          }
+        })
+        .catch(() => {
+          toast({
+            title: "Error",
+            description: "An unexpected error occurred.",
+            variant: "destructive",
+          });
+        });
     });
-    form.reset();
   }
 
   const staticContactInfo = [
@@ -158,6 +181,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                             placeholder="John Doe" 
                             className="bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/70 transition-all duration-300"
                             {...field} 
+                            disabled={isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -176,6 +200,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                             placeholder="john.doe@example.com" 
                             className="bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/70 transition-all duration-300"
                             {...field} 
+                            disabled={isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -195,6 +220,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                           placeholder="Booking for a private event" 
                           className="bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/70 transition-all duration-300"
                           {...field} 
+                          disabled={isPending}
                         />
                       </FormControl>
                       <FormMessage />
@@ -213,6 +239,7 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                           placeholder="Tell us more about your event, venue, and requirements..." 
                           className="min-h-[150px] bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/70 transition-all duration-300 resize-none"
                           {...field} 
+                          disabled={isPending}
                         />
                       </FormControl>
                       <FormMessage />
@@ -224,9 +251,13 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
                   type="submit" 
                   size="lg" 
                   className="btn-glow w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+                  disabled={isPending}
                 >
-                  <Send className="mr-2 h-5 w-5" />
-                  Send Message
+                  {isPending ? (
+                    <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Sending...</>
+                  ) : (
+                    <><Send className="mr-2 h-5 w-5" /> Send Message</>
+                  )}
                 </Button>
               </form>
             </Form>
@@ -236,5 +267,3 @@ export function ContactSection({ contactInfo }: ContactSectionProps) {
     </FloatingSection>
   );
 }
-
-    
