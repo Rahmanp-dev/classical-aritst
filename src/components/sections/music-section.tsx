@@ -133,16 +133,14 @@ export function MusicSection({
           <h3 className="text-2xl font-bold font-headline mb-8 text-center">From Instagram</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {instagramReels.map((reel, index) => (
-              <motion.div
+              <FloatingCard 
                 key={reel.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                viewport={{ once: true }}
-                className="min-w-0"
+                variant="glass"
+                delay={0.4 + index * 0.1}
+                className="overflow-hidden flex items-center justify-center p-2"
               >
                 <InstagramEmbed url={reel.url} />
-              </motion.div>
+              </FloatingCard>
             ))}
           </div>
         </motion.div>
