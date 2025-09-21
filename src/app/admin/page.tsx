@@ -524,7 +524,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                       onSuccess={(r) => handleUpload(r, "tourImage")}
                                       onError={handleUploadError}
                                     >
-                                      {({ open }) => <Button type="button" variant="outline" onClick={()={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                     </CldUploadWidget>
                                   )}
                               </div>
