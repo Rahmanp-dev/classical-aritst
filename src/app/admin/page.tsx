@@ -53,6 +53,16 @@ const formSchema = z.object({
   })),
   featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
   startListeningUrl: z.string().url("Must be a valid URL."),
+  youtubeVideos: z.array(z.object({
+    id: z.string(),
+    url: z.string().url("Must be a valid YouTube embed URL."),
+    title: z.string().min(1, "Video title is required."),
+  })),
+  instagramReels: z.array(z.object({
+    id: z.string(),
+    url: z.string().url("Must be a valid Instagram URL."),
+    caption: z.string().min(1, "Reel caption is required."),
+  })),
   galleryItems: z.array(z.object({
       id: z.string(),
       title: z.string().min(1, "Title is required."),
@@ -82,6 +92,12 @@ const formSchema = z.object({
     ticketUrl: z.string().url('Must be a valid URL.'),
   })),
   tourImage: imageSchema,
+  testimonials: z.array(z.object({
+    id: z.string(),
+    quote: z.string().min(1, "Quote is required."),
+    author: z.string().min(1, "Author is required."),
+    source: z.string().min(1, "Source is required."),
+  })),
   contact: z.object({
     email: z.string().email(),
     phone: z.string(),
@@ -112,6 +128,9 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
+  const { fields: youtubeVideoFields, append: appendYoutubeVideo, remove: removeYoutubeVideo } = useFieldArray({ control: form.control, name: "youtubeVideos" });
+  const { fields: instagramReelFields, append: appendInstagramReel, remove: removeInstagramReel } = useFieldArray({ control: form.control, name: "instagramReels" });
+  const { fields: testimonialFields, append: appendTestimonial, remove: removeTestimonial } = useFieldArray({ control: form.control, name: "testimonials" });
   
   const handleUploadError = (error: any) => {
     console.error("Cloudinary Upload Error:", error);
@@ -201,10 +220,12 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
             <Tabs defaultValue="general" className="w-full">
               <TabsList className="flex flex-wrap h-auto">
                 <TabsTrigger value="general">General & Hero</TabsTrigger>
-                <TabsTrigger value="links">Info & Links</TabsTrigger>
+                <TabsTrigger value="links">Music & Links</TabsTrigger>
+                <TabsTrigger value="media">Media</TabsTrigger>
                 <TabsTrigger value="about">About Section</TabsTrigger>
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
                 <TabsTrigger value="tour">Tour</TabsTrigger>
+                <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
                 <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="nav">Navigation & Footer</TabsTrigger>
               </TabsList>
@@ -280,11 +301,8 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     </CardContent>
                   </Card>
                    <Card className="mt-8">
-                    <CardHeader><CardTitle>Music Section Links</CardTitle><CardDescription>Manage links to streaming platforms and the featured video.</CardDescription></CardHeader>
+                    <CardHeader><CardTitle>Music Section Links</CardTitle><CardDescription>Manage links to streaming platforms.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                      <FormField control={form.control} name="featuredVideoUrl" render={({ field }) => (
-                        <FormItem><FormLabel>Featured YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..." /></FormControl><FormMessage /></FormItem>
-                      )} />
                       <FormField control={form.control} name="startListeningUrl" render={({ field }) => (
                         <FormItem><FormLabel>"Start Listening" Button URL</FormLabel><FormControl><Input {...field} placeholder="https://..." /></FormControl><FormMessage /></FormItem>
                       )} />
@@ -306,6 +324,52 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         </div>
                       ))}
                       <Button type="button" variant="outline" onClick={() => appendMusicLink({ platform: '', url: 'https://', icon: '' })}>Add Music Link</Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="media">
+                   <Card>
+                    <CardHeader><CardTitle>Featured Video & Media</CardTitle><CardDescription>Set the main featured video and collections of other media.</CardDescription></CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                      <FormField control={form.control} name="featuredVideoUrl" render={({ field }) => (
+                        <FormItem><FormLabel>Main Featured YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..." /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      
+                       <h4 className="text-md font-semibold pt-4 border-t">YouTube Video Collection</h4>
+                       {youtubeVideoFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                            <FormField control={form.control} name={`youtubeVideos.${index}.title`} render={({ field }) => (
+                              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name={`youtubeVideos.${index}.url`} render={({ field }) => (
+                              <FormItem><FormLabel>YouTube Embed URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..."/>
+                              </FormControl><FormMessage /></FormItem>
+                            )} />
+                          </div>
+                           <Button type="button" variant="ghost" size="icon" onClick={() => removeYoutubeVideo(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        </div>
+                       ))}
+                       <Button type="button" variant="outline" onClick={() => appendYoutubeVideo({ id: `yt-${Date.now()}`, url: 'https://www.youtube.com/embed/', title: 'New Video' })}>Add YouTube Video</Button>
+
+                       <h4 className="text-md font-semibold pt-4 border-t">Instagram Reels Collection</h4>
+                       {instagramReelFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                            <FormField control={form.control} name={`instagramReels.${index}.caption`} render={({ field }) => (
+                              <FormItem><FormLabel>Caption</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name={`instagramReels.${index}.url`} render={({ field }) => (
+                              <FormItem><FormLabel>Instagram Post URL</FormLabel><FormControl><Input {...field} placeholder="https://www.instagram.com/p/..."/>
+                              </FormControl><FormMessage /></FormItem>
+                            )} />
+                          </div>
+                           <Button type="button" variant="ghost" size="icon" onClick={() => removeInstagramReel(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        </div>
+                       ))}
+                       <Button type="button" variant="outline" onClick={() => appendInstagramReel({ id: `ig-${Date.now()}`, url: 'https://www.instagram.com/p/', caption: 'New Reel' })}>Add Instagram Reel</Button>
+
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -470,6 +534,33 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                   </Card>
                 </TabsContent>
 
+                <TabsContent value="testimonials">
+                  <Card>
+                    <CardHeader><CardTitle>Testimonials</CardTitle><CardDescription>Manage quotes and reviews from critics and fans.</CardDescription></CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                      {testimonialFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md relative">
+                          <div className="grid grid-cols-1 gap-4 flex-1">
+                             <FormField control={form.control} name={`testimonials.${index}.quote`} render={({ field }) => (
+                              <FormItem><FormLabel>Quote</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField control={form.control} name={`testimonials.${index}.author`} render={({ field }) => (
+                                <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                              )} />
+                              <FormField control={form.control} name={`testimonials.${index}.source`} render={({ field }) => (
+                                <FormItem><FormLabel>Source (e.g., publication)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                              )} />
+                            </div>
+                          </div>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => removeTestimonial(index)} className="shrink-0"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        </div>
+                      ))}
+                      <Button type="button" variant="outline" onClick={() => appendTestimonial({ id: `t-${Date.now()}`, quote: '', author: '', source: '' })}>Add Testimonial</Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
                 <TabsContent value="contact">
                   <Card>
                     <CardHeader><CardTitle>Contact Information</CardTitle><CardDescription>Manage the contact details displayed on your site.</CardDescription></CardHeader>
@@ -669,3 +760,4 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+    
