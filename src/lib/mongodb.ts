@@ -7,7 +7,11 @@ const options = {};
 let client: MongoClient | null = null;
 let clientPromise: Promise<MongoClient> | null = null;
 
-if (uri && (uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'))) {
+if (!uri) {
+  console.warn("MONGODB_URI is not found in .env. Database features will be disabled.");
+} else if (!(uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'))) {
+  console.warn("MONGODB_URI is not a valid MongoDB connection string. Database features will be disabled.");
+} else {
   if (process.env.NODE_ENV === 'development') {
     // In development mode, use a global variable so that the value
     // is preserved across module reloads caused by HMR (Hot Module Replacement).
@@ -25,8 +29,6 @@ if (uri && (uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'))) {
     client = new MongoClient(uri, options);
     clientPromise = client.connect();
   }
-} else {
-    console.warn("MONGODB_URI is not valid or not found in .env. Database features will be disabled.");
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a

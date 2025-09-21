@@ -23,7 +23,7 @@ import { Trash2, Upload, Eye, LogOut, Terminal } from 'lucide-react';
 
 // IMPORTANT: This is a placeholder for a real authentication system.
 // In a production app, you would use a secure method for admin access.
-export const DUMMY_ADMIN_PASSWORD = process.env.NEXT_PUBLIC_DUMMY_ADMIN_PASSWORD || "password123";
+const DUMMY_ADMIN_PASSWORD = process.env.NEXT_PUBLIC_DUMMY_ADMIN_PASSWORD || "password123";
 const AUTH_STORAGE_KEY = 'admin-authenticated';
 
 // Define Zod schemas for validation
@@ -112,8 +112,10 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const [isCloudinaryEnabled, setIsCloudinaryEnabled] = useState(false);
 
   useEffect(() => {
-    const enabled = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && !!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-    setIsCloudinaryEnabled(enabled);
+    // This effect runs on the client, so it's safe to access process.env here
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    setIsCloudinaryEnabled(!!cloudName && !!uploadPreset);
   }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -145,18 +147,26 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     if (result.event === 'success') {
       const secureUrl = result.info?.secure_url;
       if (secureUrl) {
-        const currentImageValue = form.getValues(fieldPath);
-        if (typeof currentImageValue === 'object' && currentImageValue !== null && 'imageUrl' in currentImageValue) {
-            form.setValue(fieldPath, { ...currentImageValue, imageUrl: secureUrl }, { shouldValidate: true, shouldDirty: true });
-        } else { // For simple string fields like pressKitUrl
-            form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
-        }
+        form.setValue(`${fieldPath}.imageUrl`, secureUrl, { shouldValidate: true, shouldDirty: true });
         toast({ title: 'Upload Successful', description: 'Image preview updated.' });
       } else {
         handleUploadError({ message: 'Upload succeeded but no URL was returned.' });
       }
     }
   };
+  
+  const handleFileUrlUpload = (result: any, fieldName: any) => {
+    if (result.event === 'success') {
+      const secureUrl = result.info?.secure_url;
+      if (secureUrl) {
+          form.setValue(fieldName, secureUrl, { shouldValidate: true, shouldDirty: true });
+          toast({ title: 'Upload Successful', description: 'File URL updated.' });
+      } else {
+          handleUploadError({ message: 'Upload succeeded but no URL was returned.' });
+      }
+    }
+  };
+
 
   const uploadOptions: CldUploadWidgetProps['options'] = {
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
@@ -217,7 +227,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
               </Alert>
             )}
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:flex h-auto">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:flex h-auto flex-wrap">
                 <TabsTrigger value="general">General & Hero</TabsTrigger>
                 <TabsTrigger value="links">Music & Links</TabsTrigger>
                 <TabsTrigger value="media">Media</TabsTrigger>
@@ -283,7 +293,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                     <CardHeader><CardTitle>Hero Info Cards</CardTitle><CardDescription>Manage the three small info cards in the hero section.</CardDescription></CardHeader>
                     <CardContent className="space-y-4 pt-6">
                       {infoCardFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
+                        <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`infoCards.${index}.label`} render={({ field }) => (
                               <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -400,7 +410,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
                       <h4 className="text-md font-semibold pt-4 border-t">Artist Statistics</h4>
                       {aboutStatFields.map((field, index) => (
-                        <div key={field.id} className="flex gap-4 items-start p-4 border rounded-md">
+                        <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`aboutStats.${index}.label`} render={({ field }) => (
                               <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -425,7 +435,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                             <div className="pt-2">
                               <CldUploadWidget 
                                 options={uploadOptions} 
-                                onSuccess={(r) => handleUpload(r, "pressKitUrl")}
+                                onSuccess={(r) => handleFileUrlUpload(r, "pressKitUrl")}
                                 onError={handleUploadError}
                               >
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
@@ -655,13 +665,12 @@ export default function AdminPage() {
   const [initialData, setInitialData] = useState<SiteContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  
-  const form = useForm({
-      resolver: zodResolver(z.object({ password: z.string() })),
-      defaultValues: { password: '' },
-  });
+  const [adminPassword, setAdminPassword] = useState("password123");
   
   useEffect(() => {
+    // This now runs only on the client, where process.env is available
+    setAdminPassword(process.env.NEXT_PUBLIC_DUMMY_ADMIN_PASSWORD || "password123");
+    
     try {
       if (localStorage.getItem(AUTH_STORAGE_KEY) === 'true') {
         setIsAuthenticated(true);
@@ -673,6 +682,11 @@ export default function AdminPage() {
     }
   }, []);
 
+  const form = useForm({
+      resolver: zodResolver(z.object({ password: z.string() })),
+      defaultValues: { password: '' },
+  });
+  
   useEffect(() => {
     if (isAuthenticated) {
       setIsLoading(true);
@@ -691,7 +705,7 @@ export default function AdminPage() {
   }, [isAuthenticated, toast]);
 
   const handleLogin = (values: {password: string}) => {
-    if (values.password === DUMMY_ADMIN_PASSWORD) {
+    if (values.password === adminPassword) {
       try {
         localStorage.setItem(AUTH_STORAGE_KEY, 'true');
       } catch (error) {

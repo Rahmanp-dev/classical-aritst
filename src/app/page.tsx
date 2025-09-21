@@ -27,7 +27,13 @@ function deepMerge(target: any, source: any): SiteContent {
           output[key] = deepMerge(target[key], sourceValue);
         }
       } else if (Array.isArray(sourceValue)) {
-        output[key] = sourceValue;
+        // If the source has an array, prefer it, unless it's empty.
+        // This prevents an empty array from the DB from overwriting default content.
+        if(sourceValue.length > 0) {
+          output[key] = sourceValue;
+        } else if (!target[key] || target[key].length === 0) {
+          output[key] = sourceValue;
+        }
       } else {
         output[key] = sourceValue;
       }
@@ -38,6 +44,10 @@ function deepMerge(target: any, source: any): SiteContent {
   Object.keys(defaultContent).forEach(key => {
     if (!(key in output)) {
       output[key] = (defaultContent as any)[key];
+    }
+    // ensure nested objects are also carried over if they don't exist at all in the source
+    if (isObject((defaultContent as any)[key]) && (!output[key] || !isObject(output[key]))) {
+        output[key] = deepMerge((defaultContent as any)[key], output[key] || {});
     }
   });
 
