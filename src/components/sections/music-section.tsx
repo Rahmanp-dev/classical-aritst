@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
 import Link from 'next/link';
 import { Card, CardContent } from '../ui/card';
+import { InstagramEmbed } from '../ui/instagram-embed';
 
 const iconMap = {
   spotify: SpotifyIcon,
@@ -122,7 +123,7 @@ export function MusicSection({
 
       {/* Instagram Reels Collection */}
       {instagramReels && instagramReels.length > 0 && (
-        <motion.div 
+        <motion.div
           className="mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -130,27 +131,18 @@ export function MusicSection({
           viewport={{ once: true }}
         >
           <h3 className="text-2xl font-bold font-headline mb-8 text-center">From Instagram</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {instagramReels.map((reel, index) => (
-              <FloatingCard 
+              <motion.div
                 key={reel.id}
-                variant="solid"
-                delay={0.4 + index * 0.1}
-                className="overflow-hidden group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
+                viewport={{ once: true }}
+                className="min-w-0"
               >
-                <a href={reel.url} target="_blank" rel="noopener noreferrer">
-                  <div className="bg-muted p-8 flex flex-col items-center justify-center text-center aspect-square">
-                    <Instagram className="w-12 h-12 text-primary mb-4" />
-                    <p className="text-sm text-muted-foreground line-clamp-3">{reel.caption}</p>
-                  </div>
-                  <div className="p-4 bg-card-foreground/5">
-                    <div className="flex items-center text-primary text-sm font-medium">
-                      View on Instagram
-                      <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </a>
-              </FloatingCard>
+                <InstagramEmbed url={reel.url} />
+              </motion.div>
             ))}
           </div>
         </motion.div>

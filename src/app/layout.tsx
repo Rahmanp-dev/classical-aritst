@@ -1,8 +1,10 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { MusicBackground } from '@/components/ui/music-background';
+import Script from 'next/script';
 
 
 const inter = Inter({ 
@@ -33,6 +35,7 @@ export default function RootLayout({
         <MusicBackground />
         {children}
         <Toaster />
+        <Script async src="//www.instagram.com/embed.js"></Script>
       </body>
     </html>
   );
