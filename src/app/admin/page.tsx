@@ -145,12 +145,11 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
     if (result.event === 'success') {
       const secureUrl = result.info?.secure_url;
       if (secureUrl) {
-        // For nested image objects like heroImage or gallery items
-        const currentImageValue = form.getValues(fieldPath) || {};
-        if (typeof currentImageValue === 'object' && currentImageValue !== null) {
-          form.setValue(fieldPath, { ...currentImageValue, imageUrl: secureUrl }, { shouldValidate: true, shouldDirty: true });
+        const currentImageValue = form.getValues(fieldPath);
+        if (typeof currentImageValue === 'object' && currentImageValue !== null && 'imageUrl' in currentImageValue) {
+            form.setValue(fieldPath, { ...currentImageValue, imageUrl: secureUrl }, { shouldValidate: true, shouldDirty: true });
         } else { // For simple string fields like pressKitUrl
-          form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
+            form.setValue(fieldPath, secureUrl, { shouldValidate: true, shouldDirty: true });
         }
         toast({ title: 'Upload Successful', description: 'Image preview updated.' });
       } else {
@@ -525,7 +524,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                       onSuccess={(r) => handleUpload(r, "tourImage")}
                                       onError={handleUploadError}
                                     >
-                                      {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                      {({ open }) => <Button type="button" variant="outline" onClick={()={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
                                     </CldUploadWidget>
                                   )}
                               </div>
