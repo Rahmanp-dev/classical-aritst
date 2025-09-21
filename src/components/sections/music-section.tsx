@@ -8,7 +8,6 @@ import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons'
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
 import Link from 'next/link';
-import { Card, CardContent } from '../ui/card';
 import { InstagramEmbed } from '../ui/instagram-embed';
 
 const iconMap = {
@@ -131,20 +130,17 @@ export function MusicSection({
           viewport={{ once: true }}
         >
           <h3 className="text-2xl font-bold font-headline mb-8 text-center">From Instagram</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-            {instagramReels.map((reel) => (
-              <motion.div 
-                key={reel.id} 
-                className="flex justify-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+            {instagramReels.map((reel, index) => (
+               <FloatingCard 
+                key={reel.id}
+                variant="glass"
+                size="sm"
+                delay={0.4 + index * 0.1}
+                className="flex items-center justify-center p-2"
               >
-                <Card className="w-[330px] p-2 bg-card/80 backdrop-blur-sm border-border/50">
-                  <InstagramEmbed url={reel.url} />
-                </Card>
-              </motion.div>
+                <InstagramEmbed url={reel.url} />
+              </FloatingCard>
             ))}
           </div>
         </motion.div>
