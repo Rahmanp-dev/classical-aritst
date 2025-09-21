@@ -203,5 +203,3 @@ export const defaultContent = {
     location: "New York, NY",
   },
 };
-
-    
