@@ -38,6 +38,18 @@ const formSchema = z.object({
   featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
   startListeningUrl: z.string().url("Must be a valid URL."),
 
+  youtubeVideos: z.array(z.object({
+    id: z.string(),
+    url: z.string().url("Must be a valid YouTube embed URL."),
+    title: z.string().min(1, "Video title is required."),
+  })),
+
+  instagramReels: z.array(z.object({
+    id: z.string(),
+    url: z.string().url("Must be a valid Instagram URL."),
+    caption: z.string().min(1, "Reel caption is required."),
+  })),
+
   galleryItems: z.array(z.object({
       id: z.string(),
       title: z.string().min(1, "Title is required."),
@@ -74,6 +86,13 @@ const formSchema = z.object({
   })),
   tourImage: imageSchema,
 
+  testimonials: z.array(z.object({
+    id: z.string(),
+    quote: z.string().min(1, "Quote is required."),
+    author: z.string().min(1, "Author is required."),
+    source: z.string().min(1, "Source is required."),
+  })),
+
   contact: z.object({
     email: z.string().email(),
     phone: z.string(),
@@ -88,28 +107,37 @@ const CONTENT_ID = "main_content";
 
 // Correct deep merge utility that handles arrays properly
 function deepMerge(target: any, source: any): SiteContent {
-    const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
+  const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
 
-    const output = { ...target };
+  const output = { ...target };
 
-    if (isObject(target) && isObject(source)) {
-        Object.keys(source).forEach(key => {
-            if (isObject(source[key])) {
-                if (!(key in target)) {
-                    Object.assign(output, { [key]: source[key] });
-                } else {
-                    output[key] = deepMerge(target[key], source[key]);
-                }
-            } else if (Array.isArray(source[key])) {
-                // If the source has an array, prefer it.
-                output[key] = source[key];
-            }
-            else {
-                Object.assign(output, { [key]: source[key] });
-            }
-        });
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      const sourceValue = source[key];
+      if (isObject(sourceValue)) {
+        if (!(key in target)) {
+          Object.assign(output, { [key]: sourceValue });
+        } else {
+          output[key] = deepMerge(target[key], sourceValue);
+        }
+      } else if (Array.isArray(sourceValue)) {
+        // If the source has an array, prefer it.
+        // This is important for lists managed by the admin panel.
+        output[key] = sourceValue;
+      } else {
+        Object.assign(output, { [key]: sourceValue });
+      }
+    });
+  }
+
+  // Ensure all keys from defaultContent are present, even if not in source
+  Object.keys(defaultContent).forEach(key => {
+    if (!(key in output)) {
+      output[key] = (defaultContent as any)[key];
     }
-    return output as SiteContent;
+  });
+
+  return output as SiteContent;
 }
 
 
@@ -142,15 +170,16 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     // Merge DB content with defaults to ensure all keys are present
     const mergedContent = deepMerge(defaultContent, restOfDbContent);
-
+    
     const parsed = formSchema.safeParse(mergedContent);
-
+    
     if(parsed.success){
       return parsed.data;
+    } else {
+      console.warn("Database content is malformed. Returning merged default content. Error:", parsed.error.flatten());
+      // Even if parsing fails, return a valid, merged object to prevent crashes.
+      return mergedContent;
     }
-
-    console.warn("Database content is malformed. Returning merged default content. Error:", parsed.error.flatten());
-    return mergedContent;
 
   } catch (error) {
     console.error('Failed to fetch site content:', error);
@@ -185,11 +214,10 @@ export async function saveSiteContent(values: SiteContent) {
     );
     
     // 4. Check if the update was successful.
-    if (result.modifiedCount === 0 && result.upsertedCount === 0 && result.matchedCount === 0) {
+    if (result.modifiedCount === 0 && result.upsertedCount === 0 && result.matchedCount > 0) {
         // This case can happen if the data is identical to what's in the DB.
         // It's not a failure, but nothing was changed.
-        console.log("No changes to save to the database.");
-         return { success: true, message: "No new changes to save." };
+        return { success: true, message: "No new changes to save." };
     }
     
     // 5. Revalidate paths to show the new content.

@@ -1,4 +1,5 @@
 
+
 export type ImageType = {
   id: string;
   description: string;
@@ -46,6 +47,26 @@ export type AboutStat = {
   icon: string;
 };
 
+export type Testimonial = {
+  id: string;
+  quote: string;
+  author: string;
+  source: string;
+};
+
+export type YoutubeVideo = {
+  id: string;
+  url: string;
+  title: string;
+};
+
+export type InstagramReel = {
+  id: string;
+  url: string;
+  caption: string;
+};
+
+
 // This is the default content that will be inserted into the database
 // if no content is found.
 export const defaultContent = {
@@ -78,6 +99,19 @@ export const defaultContent = {
 
   featuredVideoUrl: "https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG",
   startListeningUrl: "#music",
+
+  youtubeVideos: [
+    { id: 'yt-1', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Classical Rendition' },
+    { id: 'yt-2', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Live Performance Clip' },
+    { id: 'yt-3', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Studio Session' },
+    { id: 'yt-4', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Acoustic Cover' },
+  ],
+
+  instagramReels: [
+      { id: 'ig-1', url: 'https://www.instagram.com/p/C2-b_j_r_qW/', caption: 'Quick jam session' },
+      { id: 'ig-2', url: 'https://www.instagram.com/p/C2-b_j_r_qW/', caption: 'Behind the scenes' },
+      { id: 'ig-3', url: 'https://www.instagram.com/p/C2-b_j_r_qW/', caption: 'From the tour bus' },
+  ],
 
   galleryItems: [
     {
@@ -155,6 +189,12 @@ export const defaultContent = {
     imageUrl: "https://picsum.photos/seed/map/1200/800",
     imageHint: "tour map"
   },
+
+  testimonials: [
+    { id: 't-1', quote: "A breathtaking performance that reimagines what classical music can be. A true innovator.", author: "Jane Doe", source: "Music Critic, The Times" },
+    { id: 't-2', quote: "An absolute master of the craft. The live show is an experience you won't forget.", author: "John Smith", source: "Acoustic Magazine" },
+    { id: 't-3', quote: "The new album is a masterpiece of composition and technical skill.", author: "Emily White", source: "Classical Today" },
+  ],
 
   contact: {
     email: "booking@acousticedge.com",
