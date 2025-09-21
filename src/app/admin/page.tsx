@@ -23,7 +23,6 @@ import { Trash2, Upload, Eye, LogOut, Terminal } from 'lucide-react';
 
 // IMPORTANT: This is a placeholder for a real authentication system.
 // In a production app, you would use a secure method for admin access.
-const DUMMY_ADMIN_PASSWORD = process.env.NEXT_PUBLIC_DUMMY_ADMIN_PASSWORD || "password123";
 const AUTH_STORAGE_KEY = 'admin-authenticated';
 
 // Define Zod schemas for validation
@@ -773,6 +772,4 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-    
-
     

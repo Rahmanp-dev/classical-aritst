@@ -47,7 +47,7 @@ function deepMerge(target: any, source: any): SiteContent {
     }
     // ensure nested objects are also carried over if they don't exist at all in the source
     if (isObject((defaultContent as any)[key]) && (!output[key] || !isObject(output[key]))) {
-        output[key] = deepMerge((defaultContent as any)[key], output[key] || {});
+        output[key] = deepMerge(output[key] || {}, (defaultContent as any)[key]);
     }
   });
 

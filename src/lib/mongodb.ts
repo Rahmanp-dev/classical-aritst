@@ -9,8 +9,6 @@ let clientPromise: Promise<MongoClient> | null = null;
 
 if (!uri) {
   console.warn("MONGODB_URI is not found in .env. Database features will be disabled.");
-} else if (!(uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'))) {
-  console.warn("MONGODB_URI is not a valid MongoDB connection string. Database features will be disabled.");
 } else {
   if (process.env.NODE_ENV === 'development') {
     // In development mode, use a global variable so that the value
