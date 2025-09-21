@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { NavLink } from '@/lib/data';
 import { MusicalLogo } from '@/components/ui/musical-logo';
+import { motion } from 'framer-motion';
 
 type HeaderProps = {
   navLinks: NavLink[];
@@ -26,6 +27,23 @@ export function Header({ navLinks, artistName }: HeaderProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const mobileMenuVariants = {
+    closed: { opacity: 0, x: "100%" },
+    open: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const mobileLinkVariants = {
+    closed: { opacity: 0, y: 20 },
+    open: { opacity: 1, y: 0 }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 p-4">
@@ -80,7 +98,7 @@ export function Header({ navLinks, artistName }: HeaderProps) {
               </SheetTrigger>
               <SheetContent 
                 side="right" 
-                className="w-[300px] sm:w-[400px] glass-card-strong border-l border-white/20"
+                className="w-full max-w-[320px] sm:max-w-sm glass-card-strong border-l border-white/20 p-0"
               >
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between p-6 border-b border-white/10">
@@ -102,24 +120,27 @@ export function Header({ navLinks, artistName }: HeaderProps) {
                         <span className="sr-only">Close menu</span>
                       </Button>
                   </div>
-                  <nav className="flex-1 flex flex-col items-center justify-center space-y-8">
-                    {navLinks.map((link, index) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={cn(
-                          "text-2xl font-headline transition-all duration-300",
-                          "hover:text-primary hover:scale-110",
-                          "opacity-0 translate-y-4",
-                          isMobileMenuOpen && "animate-in slide-in-from-right-4 fade-in"
-                        )}
-                        style={{ animationDelay: `${index * 100}ms` }}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {link.label}
-                      </Link>
+                  <motion.nav 
+                    className="flex-1 flex flex-col items-center justify-center -mt-16 space-y-8"
+                    initial="closed"
+                    animate={isMobileMenuOpen ? "open" : "closed"}
+                    variants={mobileMenuVariants}
+                  >
+                    {navLinks.map((link) => (
+                      <motion.div key={link.href} variants={mobileLinkVariants}>
+                        <Link
+                          href={link.href}
+                          className={cn(
+                            "text-2xl font-headline transition-all duration-300",
+                            "hover:text-primary hover:scale-110"
+                          )}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {link.label}
+                        </Link>
+                      </motion.div>
                     ))}
-                  </nav>
+                  </motion.nav>
                 </div>
               </SheetContent>
             </Sheet>
