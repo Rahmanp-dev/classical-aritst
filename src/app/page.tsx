@@ -13,37 +13,33 @@ import { defaultContent } from "@/lib/data";
 
 // Correct deep merge utility that handles arrays properly
 function deepMerge(target: any, source: any): SiteContent {
-  const isObject = (obj: any) => obj && typeof obj === 'object';
-  
-  if (!isObject(target) || !isObject(source)) {
-    return source;
-  }
+  const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
 
   const output = { ...target };
 
-  Object.keys(source).forEach(key => {
-    const targetValue = target[key];
-    const sourceValue = source[key];
-
-    if (Array.isArray(sourceValue)) {
-      // For arrays, we will prefer the source (database) value if it exists and is an array.
-      output[key] = sourceValue;
-    } else if (isObject(targetValue) && isObject(sourceValue)) {
-      output[key] = deepMerge(targetValue, sourceValue);
-    } else {
-      // This handles cases where the source value is primitive or the target doesn't have the key.
-      // It also handles the case where the db has a value but the default might be an object (edge case).
-      output[key] = sourceValue;
-    }
-  });
-
-  // Ensure all keys from defaultContent are present, even if not in source
-  for (const key in defaultContent) {
-    if (!output.hasOwnProperty(key)) {
-      output[key] = (defaultContent as any)[key];
-    }
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      const sourceValue = source[key];
+      if (isObject(sourceValue)) {
+        if (!(key in target) || !isObject(target[key])) {
+          output[key] = sourceValue;
+        } else {
+          output[key] = deepMerge(target[key], sourceValue);
+        }
+      } else if (Array.isArray(sourceValue)) {
+        output[key] = sourceValue;
+      } else {
+        output[key] = sourceValue;
+      }
+    });
   }
 
+  // Ensure all keys from defaultContent are present, even if not in source
+  Object.keys(defaultContent).forEach(key => {
+    if (!(key in output)) {
+      output[key] = (defaultContent as any)[key];
+    }
+  });
 
   return output as SiteContent;
 }
