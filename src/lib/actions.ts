@@ -72,7 +72,10 @@ const formSchema = z.object({
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
   artistBio: z.string().min(1, 'Artist bio is required.'),
   
-  heroImage: imageSchema,
+  heroImage: z.object({
+    desktop: imageSchema,
+    mobile: imageSchema,
+  }),
   
   heroCTAs: z.object({
     listenNow: z.string().url("Must be a valid URL."),
@@ -98,7 +101,7 @@ const formSchema = z.object({
     id: z.string(),
     url: z.string().url("Must be a valid YouTube embed URL."),
     title: z.string().min(1, "Video title is required."),
-    genre: z.string().min(1, "Genre is required."),
+    genre: z.string().optional(),
   })),
 
   instagramReels: z.array(z.object({

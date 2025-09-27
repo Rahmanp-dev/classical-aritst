@@ -36,7 +36,10 @@ const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
   artistBio: z.string().min(1, 'Artist bio is required.'),
-  heroImage: imageSchema,
+  heroImage: z.object({
+    desktop: imageSchema,
+    mobile: imageSchema,
+  }),
   heroCTAs: z.object({
     listenNow: z.string().url("Must be a valid URL."),
     upcomingShows: z.string().url("Must be a valid URL."),
@@ -259,19 +262,39 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                   <Card className="mt-8">
                     <CardHeader><CardTitle>Hero Section</CardTitle><CardDescription>Manage hero image and call-to-action button links.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                      <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                              {form.watch('heroImage')?.imageUrl && <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>}
+                              {form.watch('heroImage.desktop')?.imageUrl && <Image src={form.watch('heroImage.desktop.imageUrl')} alt="Hero background (Desktop)" fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
-                              <FormLabel>Hero Background Image <span className="text-muted-foreground font-normal text-sm">(Recommended: 16:9 landscape)</span></FormLabel>
-                              <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
+                              <FormLabel>Desktop Hero Image <span className="text-muted-foreground font-normal text-sm">(Recommended: 16:9 landscape)</span></FormLabel>
+                              <FormField control={form.control} name="heroImage.desktop.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
                               {isCloudinaryEnabled && (
                                 <CldUploadWidget 
                                   options={uploadOptions} 
-                                  onSuccess={(result) => handleUpload(result, "heroImage")} 
+                                  onSuccess={(result) => handleUpload(result, "heroImage.desktop")} 
+                                  onError={handleUploadError}
+                                >
+                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}
+                                </CldUploadWidget>
+                              )}
+                          </div>
+                      </div>
+                       <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
+                          <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                              {form.watch('heroImage.mobile')?.imageUrl && <Image src={form.watch('heroImage.mobile.imageUrl')} alt="Hero background (Mobile)" fill className="object-cover"/>}
+                          </div>
+                          <div className="grid grid-cols-1 gap-4 flex-1">
+                              <FormLabel>Mobile Hero Image <span className="text-muted-foreground font-normal text-sm">(Recommended: 9:16 portrait)</span></FormLabel>
+                              <FormField control={form.control} name="heroImage.mobile.imageHint" render={({ field }) => (
+                                  <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                              )} />
+                              {isCloudinaryEnabled && (
+                                <CldUploadWidget 
+                                  options={uploadOptions} 
+                                  onSuccess={(result) => handleUpload(result, "heroImage.mobile")} 
                                   onError={handleUploadError}
                                 >
                                   {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Change Image</Button>}

@@ -76,8 +76,14 @@ export const defaultContent = {
   artistBio: "Aniruddh Aithal is a 24-year-old Hindustani classical musician with expertise in vocal music. He started formal training at 10 years old and has trained for 8 years with Smt. Geetha Garud Prithviraj, and now receives training from Dr. Ashok Huggannavar. He's an award-winning artist and a graded artist of All India Radio, and has received scholarships from CCRT and the Karnataka Sangeetha Nritya academy.",
   
   heroImage: {
-    imageUrl: "https://picsum.photos/seed/hero/1920/1080",
-    imageHint: "musician stage"
+    desktop: {
+      imageUrl: "https://picsum.photos/seed/hero-desktop/1920/1080",
+      imageHint: "musician stage"
+    },
+    mobile: {
+      imageUrl: "https://picsum.photos/seed/hero-mobile/1080/1920",
+      imageHint: "musician portrait"
+    }
   },
   
   heroCTAs: {

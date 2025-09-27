@@ -11,7 +11,10 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 type HeroProps = {
-  heroImage: Omit<ImageType, "id" | "description">;
+  heroImage: {
+    desktop: Omit<ImageType, "id" | "description">;
+    mobile: Omit<ImageType, "id" | "description">;
+  },
   artistName: string;
   artistTagline: string;
   heroCTAs: { listenNow: string; upcomingShows: string };
@@ -79,15 +82,28 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
     >
       {/* Background Image with Enhanced Overlay */}
       <div className="absolute inset-0">
-        <Image
-          src={heroImage.imageUrl}
-          alt="Hero background"
-          fill
-          className="object-cover"
-          priority
-          data-ai-hint={heroImage.imageHint}
-          sizes="100vw"
-        />
+        <div className="hidden md:block w-full h-full">
+            <Image
+            src={heroImage.desktop.imageUrl}
+            alt="Hero background (Desktop)"
+            fill
+            className="object-cover"
+            priority
+            data-ai-hint={heroImage.desktop.imageHint}
+            sizes="100vw"
+            />
+        </div>
+        <div className="block md:hidden w-full h-full">
+            <Image
+            src={heroImage.mobile.imageUrl}
+            alt="Hero background (Mobile)"
+            fill
+            className="object-cover"
+            priority
+            data-ai-hint={heroImage.mobile.imageHint}
+            sizes="100vw"
+            />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/90" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
       </div>
