@@ -56,7 +56,7 @@ const formSchema = z.object({
     id: z.string(),
     url: z.string().url("Must be a valid YouTube embed URL."),
     title: z.string().min(1, "Video title is required."),
-    genre: z.string().min(1, "Genre is required."),
+    genre: z.string(),
   })),
   instagramReels: z.array(z.object({
     id: z.string(),
@@ -777,3 +777,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
