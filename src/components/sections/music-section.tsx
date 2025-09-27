@@ -101,16 +101,14 @@ export function MusicSection({
           viewport={{ once: true }}
         >
           <h3 className="text-2xl font-bold font-headline mb-8 text-center">YouTube by Genres</h3>
-          <Tabs defaultValue={youtubeGenres[0]} className="w-full max-w-6xl mx-auto">
-            <div className="flex justify-center mb-4">
-                <TabsList>
-                {youtubeGenres.map(genre => (
-                    <TabsTrigger key={genre} value={genre}>{genre}</TabsTrigger>
-                ))}
-                </TabsList>
-            </div>
+          <Tabs defaultValue={youtubeGenres[0]} className="w-full max-w-6xl mx-auto flex flex-col items-center mb-4">
+            <TabsList>
             {youtubeGenres.map(genre => (
-              <TabsContent key={genre} value={genre}>
+                <TabsTrigger key={genre} value={genre}>{genre}</TabsTrigger>
+            ))}
+            </TabsList>
+            {youtubeGenres.map(genre => (
+              <TabsContent key={genre} value={genre} className="w-full">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {youtubeVideos.filter(v => v.genre === genre).map((video, index) => (
                     <FloatingCard 
