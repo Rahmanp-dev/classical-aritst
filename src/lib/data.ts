@@ -171,8 +171,6 @@ export const defaultContent = {
     { label: 'Albums', value: '8', icon: 'Music2' },
   ],
 
-  pressKitUrl: "/press-kit.pdf",
-
   socialLinks: [
     { platform: 'Instagram', url: 'https://instagram.com', icon: 'instagram' },
     { platform: 'Twitter', url: 'https://twitter.com', icon: 'twitter' },
@@ -211,3 +209,5 @@ export const defaultContent = {
     location: "New York, NY",
   },
 };
+
+    

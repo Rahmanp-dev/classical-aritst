@@ -77,7 +77,6 @@ export default async function Home() {
           artistName={content.artistName}
           artistBio={content.artistBio}
           stats={content.aboutStats}
-          pressKitUrl={content.pressKitUrl}
         />
         {content.youtubeVideos && content.youtubeVideos.length > 0 && (
             <MusicSection 
@@ -101,3 +100,5 @@ export default async function Home() {
     </div>
   );
 }
+
+    

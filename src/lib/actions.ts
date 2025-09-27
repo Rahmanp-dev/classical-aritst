@@ -125,8 +125,6 @@ const formSchema = z.object({
     icon: z.string().min(1, "Icon name is required."),
   })).length(3, "There must be exactly 3 stats."),
 
-  pressKitUrl: z.string().url("Must be a valid URL for the downloadable file."),
-  
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -298,3 +296,5 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
+
+    

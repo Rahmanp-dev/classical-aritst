@@ -79,7 +79,6 @@ const formSchema = z.object({
     value: z.string().min(1, "Value is required."),
     icon: z.string().min(1, "Icon name is required."),
   })).length(3, "There must be exactly 3 stats."),
-  pressKitUrl: z.string().url("Must be a valid URL for the downloadable file."),
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -413,7 +412,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
 
                 <TabsContent value="about">
                    <Card>
-                    <CardHeader><CardTitle>About Section</CardTitle><CardDescription>Manage the artist portrait, stats, and press kit.</CardDescription></CardHeader>
+                    <CardHeader><CardTitle>About Section</CardTitle><CardDescription>Manage the artist portrait and stats.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
                        <div className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
                           <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted">
@@ -452,26 +451,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                           </div>
                         </div>
                       ))}
-
-                      <h4 className="text-md font-semibold pt-4 border-t">Press Kit</h4>
-                      <FormField control={form.control} name="pressKitUrl" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Downloadable Press Kit URL</FormLabel>
-                          <FormControl><Input {...field} placeholder="https://..." /></FormControl>
-                          <FormMessage />
-                          {isCloudinaryEnabled && (
-                            <div className="pt-2">
-                              <CldUploadWidget 
-                                options={uploadOptions} 
-                                onSuccess={(r) => handleFileUrlUpload(r, "pressKitUrl")}
-                                onError={handleUploadError}
-                              >
-                                  {({ open }) => <Button type="button" variant="outline" onClick={() => open?.()}><Upload className="mr-2 h-4 w-4" /> Upload File</Button>}
-                              </CldUploadWidget>
-                            </div>
-                          )}
-                        </FormItem>
-                      )} />
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -802,6 +781,8 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
 
     
 

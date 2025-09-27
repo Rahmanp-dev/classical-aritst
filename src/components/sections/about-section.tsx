@@ -2,18 +2,16 @@
 "use client";
 
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Download, Award, Globe, Music2, Sparkles } from 'lucide-react';
 import type { ImageType, AboutStat } from '@/lib/data';
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
+import { Award, Globe, Music2, Sparkles } from 'lucide-react';
 
 type AboutProps = {
   artistImage: Omit<ImageType, "id" | "description">;
   artistName: string;
   artistBio: string;
   stats: AboutStat[];
-  pressKitUrl: string;
 }
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -23,7 +21,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   Sparkles,
 };
 
-export function AboutSection({ artistImage, artistName, artistBio, stats, pressKitUrl }: AboutProps) {
+export function AboutSection({ artistImage, artistName, artistBio, stats }: AboutProps) {
 
   return (
     <FloatingSection id="about" background="subtle">
@@ -106,25 +104,6 @@ export function AboutSection({ artistImage, artistName, artistBio, stats, pressK
                 )
               })}
             </FloatingGrid>
-          </motion.div>
-
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <Button 
-              asChild 
-              size="lg" 
-              className="btn-glow bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white border-0 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
-            >
-              <a href={pressKitUrl} download target="_blank" rel="noopener noreferrer">
-                <Download className="mr-2 h-5 w-5" />
-                Download Press Kit
-              </a>
-            </Button>
           </motion.div>
         </motion.div>
       </div>
