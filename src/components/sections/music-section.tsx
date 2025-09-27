@@ -1,7 +1,9 @@
 
 "use client";
 
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Link as MusicLink, YoutubeVideo, InstagramReel } from '@/lib/data';
 import { Youtube, Play, ExternalLink, Instagram } from 'lucide-react';
 import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons';
@@ -39,6 +41,12 @@ export function MusicSection({
   youtubeVideos, 
   instagramReels 
 }: MusicProps) {
+
+  const youtubeGenres = useMemo(() => {
+    const genres = new Set(youtubeVideos.map(v => v.genre));
+    return Array.from(genres);
+  }, [youtubeVideos]);
+
   return (
     <FloatingSection id="music" background="gradient">
       {/* Section Header */}
@@ -50,7 +58,7 @@ export function MusicSection({
         viewport={{ once: true }}
       >
         <h2 className="text-4xl md:text-6xl font-bold font-headline mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Discover the Music & Media
+          Past Performances
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
           Explore official releases, live performances, and moments from behind the scenes.
@@ -92,31 +100,44 @@ export function MusicSection({
           transition={{ duration: 0.8, delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-bold font-headline mb-8 text-center">More Videos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {youtubeVideos.map((video, index) => (
-               <FloatingCard 
-                key={video.id}
-                variant="solid"
-                delay={0.4 + index * 0.1}
-                className="overflow-hidden"
-              >
-                <div className="aspect-video relative">
-                   <iframe
-                    className="w-full h-full"
-                    src={video.url}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+          <h3 className="text-2xl font-bold font-headline mb-8 text-center">YouTube by Genres</h3>
+          <Tabs defaultValue={youtubeGenres[0]} className="w-full max-w-6xl mx-auto">
+            <div className="flex justify-center mb-4">
+                <TabsList>
+                {youtubeGenres.map(genre => (
+                    <TabsTrigger key={genre} value={genre}>{genre}</TabsTrigger>
+                ))}
+                </TabsList>
+            </div>
+            {youtubeGenres.map(genre => (
+              <TabsContent key={genre} value={genre}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {youtubeVideos.filter(v => v.genre === genre).map((video, index) => (
+                    <FloatingCard 
+                      key={video.id}
+                      variant="solid"
+                      delay={0.1 * index}
+                      className="overflow-hidden"
+                    >
+                      <div className="aspect-video relative">
+                        <iframe
+                          className="w-full h-full"
+                          src={video.url}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h4 className="font-semibold truncate" title={video.title}>{video.title}</h4>
+                      </div>
+                    </FloatingCard>
+                  ))}
                 </div>
-                <div className="p-4">
-                  <h4 className="font-semibold truncate" title={video.title}>{video.title}</h4>
-                </div>
-              </FloatingCard>
+              </TabsContent>
             ))}
-          </div>
+          </Tabs>
         </motion.div>
       )}
 
@@ -132,15 +153,19 @@ export function MusicSection({
           <h3 className="text-2xl font-bold font-headline mb-8 text-center">From Instagram</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
             {instagramReels.map((reel, index) => (
-               <FloatingCard 
-                key={reel.id}
-                variant="glass"
-                size="sm"
-                delay={0.4 + index * 0.1}
-                className="flex items-center justify-center p-2"
+              <motion.div 
+                key={reel.id} 
+                className="w-[330px] h-[650px] bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 rounded-xl p-1 flex items-center justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  delay: 0.4 + index * 0.1,
+                  duration: 0.6,
+                  ease: "easeOut"
+                }}
               >
-                <InstagramEmbed url={reel.url} />
-              </FloatingCard>
+                  <InstagramEmbed url={reel.url} />
+              </motion.div>
             ))}
           </div>
         </motion.div>

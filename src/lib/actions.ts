@@ -98,6 +98,7 @@ const formSchema = z.object({
     id: z.string(),
     url: z.string().url("Must be a valid YouTube embed URL."),
     title: z.string().min(1, "Video title is required."),
+    genre: z.string().min(1, "Genre is required."),
   })),
 
   instagramReels: z.array(z.object({
@@ -294,5 +295,3 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
-
-    

@@ -58,6 +58,7 @@ export type YoutubeVideo = {
   id: string;
   url: string;
   title: string;
+  genre: string;
 };
 
 export type InstagramReel = {
@@ -101,10 +102,11 @@ export const defaultContent = {
   startListeningUrl: "#music",
 
   youtubeVideos: [
-    { id: 'yt-1', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Classical Rendition' },
-    { id: 'yt-2', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Live Performance Clip' },
-    { id: 'yt-3', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Studio Session' },
-    { id: 'yt-4', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Acoustic Cover' },
+    { id: 'yt-1', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Classical Rendition', genre: 'Classical Concerts' },
+    { id: 'yt-2', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Devotional Song', genre: 'Devotional Songs' },
+    { id: 'yt-3', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Ranga Geetha Performance', genre: 'Ranga Geetha' },
+    { id: 'yt-4', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Jugalbandi Duet', genre: 'Jugalbandi' },
+    { id: 'yt-5', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Live Concert Highlight', genre: 'Classical Concerts' },
   ],
 
   instagramReels: [
@@ -172,11 +174,11 @@ export const defaultContent = {
   ],
 
   navLinks: [
-    { href: '#tour', label: 'Tour' },
-    { href: '#music', label: 'Media' },
-    { href: '#gallery', label: 'Gallery' },
-    { href: '#testimonials', label: 'Acclaim' },
     { href: '#about', label: 'About' },
+    { href: '#music', label: 'Past Performances' },
+    { href: '#tour', label: 'Upcoming Concerts' },
+    { href: '#testimonials', label: 'Testimonials' },
+    { href: '#gallery', label: 'Gallery' },
     { href: '#contact', label: 'Contact' },
   ],
 

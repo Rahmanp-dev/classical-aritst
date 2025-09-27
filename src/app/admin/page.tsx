@@ -56,6 +56,7 @@ const formSchema = z.object({
     id: z.string(),
     url: z.string().url("Must be a valid YouTube embed URL."),
     title: z.string().min(1, "Video title is required."),
+    genre: z.string().min(1, "Genre is required."),
   })),
   instagramReels: z.array(z.object({
     id: z.string(),
@@ -347,7 +348,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                        <h4 className="text-md font-semibold pt-4 border-t">YouTube Video Collection</h4>
                        {youtubeVideoFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
                             <FormField control={form.control} name={`youtubeVideos.${index}.title`} render={({ field }) => (
                               <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
@@ -355,11 +356,15 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               <FormItem><FormLabel>YouTube Embed URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..."/>
                               </FormControl><FormMessage /></FormItem>
                             )} />
+                             <FormField control={form.control} name={`youtubeVideos.${index}.genre`} render={({ field }) => (
+                              <FormItem><FormLabel>Genre</FormLabel><FormControl><Input {...field} placeholder="e.g., Classical Concerts"/>
+                              </FormControl><FormMessage /></FormItem>
+                            )} />
                           </div>
                            <Button type="button" variant="ghost" size="icon" onClick={() => removeYoutubeVideo(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
                        ))}
-                       <Button type="button" variant="outline" onClick={() => appendYoutubeVideo({ id: `yt-${Date.now()}`, url: 'https://www.youtube.com/embed/', title: 'New Video' })}>Add YouTube Video</Button>
+                       <Button type="button" variant="outline" onClick={() => appendYoutubeVideo({ id: `yt-${Date.now()}`, url: 'https://www.youtube.com/embed/', title: 'New Video', genre: 'Classical Concerts' })}>Add YouTube Video</Button>
 
                        <h4 className="text-md font-semibold pt-4 border-t">Instagram Reels Collection</h4>
                        {instagramReelFields.map((field, index) => (
@@ -772,4 +777,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-    

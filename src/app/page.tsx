@@ -72,7 +72,13 @@ export default async function Home() {
           heroCTAs={content.heroCTAs}
           infoCards={content.infoCards}
         />
-        <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
+        <AboutSection 
+          artistImage={content.artistImage}
+          artistName={content.artistName}
+          artistBio={content.artistBio}
+          stats={content.aboutStats}
+          pressKitUrl={content.pressKitUrl}
+        />
         <MusicSection 
           musicLinks={content.musicLinks}
           featuredVideoUrl={content.featuredVideoUrl}
@@ -81,14 +87,8 @@ export default async function Home() {
           instagramReels={content.instagramReels}
         />
         <GallerySection galleryItems={content.galleryItems} />
+        <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
         <TestimonialsSection testimonials={content.testimonials} />
-        <AboutSection 
-          artistImage={content.artistImage}
-          artistName={content.artistName}
-          artistBio={content.artistBio}
-          stats={content.aboutStats}
-          pressKitUrl={content.pressKitUrl}
-        />
         <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 
