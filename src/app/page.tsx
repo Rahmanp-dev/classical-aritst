@@ -79,13 +79,15 @@ export default async function Home() {
           stats={content.aboutStats}
           pressKitUrl={content.pressKitUrl}
         />
-        <MusicSection 
-          musicLinks={content.musicLinks}
-          featuredVideoUrl={content.featuredVideoUrl}
-          startListeningUrl={content.startListeningUrl}
-          youtubeVideos={content.youtubeVideos}
-          instagramReels={content.instagramReels}
-        />
+        {content.youtubeVideos && content.youtubeVideos.length > 0 && (
+            <MusicSection 
+              musicLinks={content.musicLinks}
+              featuredVideoUrl={content.featuredVideoUrl}
+              startListeningUrl={content.startListeningUrl}
+              youtubeVideos={content.youtubeVideos}
+              instagramReels={content.instagramReels}
+            />
+        )}
         <GallerySection galleryItems={content.galleryItems} />
         <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
         <TestimonialsSection testimonials={content.testimonials} />
