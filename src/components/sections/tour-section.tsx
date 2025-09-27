@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Image from 'next/image';
@@ -104,13 +105,14 @@ export function TourSection({ tourDates, tourImage }: TourProps) {
           </div>
           <motion.div className="lg:col-span-2" variants={imageVariants}>
             <Card className="overflow-hidden h-full shadow-2xl">
-              <div className="relative w-full h-full min-h-[400px] bg-muted rounded-lg">
+              <div className="relative w-full aspect-[4/3] lg:aspect-[16/9] bg-muted rounded-lg">
                 <Image
                   src={tourImage.imageUrl}
                   alt={tourImage.description || tourImage.imageHint || 'Tour image'}
                   fill
                   className="object-cover"
                   data-ai-hint={tourImage.imageHint}
+                  sizes="(max-width: 1023px) 100vw, 67vw"
                 />
               </div>
             </Card>
@@ -120,3 +122,5 @@ export function TourSection({ tourDates, tourImage }: TourProps) {
     </motion.section>
   );
 }
+
+    

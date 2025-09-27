@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -56,7 +57,7 @@ const formSchema = z.object({
     id: z.string(),
     url: z.string().url("Must be a valid YouTube embed URL."),
     title: z.string().min(1, "Video title is required."),
-    genre: z.string(),
+    genre: z.string().optional(),
   })),
   instagramReels: z.array(z.object({
     id: z.string(),
@@ -263,7 +264,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               {form.watch('heroImage')?.imageUrl && <Image src={form.watch('heroImage.imageUrl')} alt="Hero background" fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
-                              <FormLabel>Hero Background Image</FormLabel>
+                              <FormLabel>Hero Background Image <span className="text-muted-foreground font-normal text-sm">(Recommended: 16:9 landscape)</span></FormLabel>
                               <FormField control={form.control} name="heroImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
@@ -396,7 +397,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                               {form.watch('artistImage')?.imageUrl && <Image src={form.watch('artistImage.imageUrl')} alt="Artist portrait" fill className="object-cover"/>}
                           </div>
                           <div className="grid grid-cols-1 gap-4 flex-1">
-                              <FormLabel>About Section Portrait</FormLabel>
+                              <FormLabel>About Section Portrait <span className="text-muted-foreground font-normal text-sm">(Recommended: 4:5 portrait)</span></FormLabel>
                               <FormField control={form.control} name="artistImage.imageHint" render={({ field }) => (
                                   <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                               )} />
@@ -529,8 +530,9 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                                   {form.watch('tourImage')?.imageUrl && <Image src={form.watch('tourImage.imageUrl')} alt="Tour section image" fill className="object-cover"/>}
                               </div>
                               <div className="grid grid-cols-1 gap-4 flex-1">
+                                    <FormLabel>Tour Section Image <span className="text-muted-foreground font-normal text-sm">(Recommended: 16:9 landscape)</span></FormLabel>
                                    <FormField control={form.control} name="tourImage.imageHint" render={({ field }) => (
-                                      <FormItem><FormLabel>Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                      <FormItem><FormLabel className="text-sm font-normal">Image Hint</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                                   )} />
                                   {isCloudinaryEnabled && (
                                     <CldUploadWidget 
@@ -777,5 +779,7 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    
 
     

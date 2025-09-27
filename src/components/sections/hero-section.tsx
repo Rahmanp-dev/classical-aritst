@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Image from 'next/image';
@@ -85,6 +86,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
           className="object-cover"
           priority
           data-ai-hint={heroImage.imageHint}
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/90" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
@@ -233,5 +235,7 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
     </section>
   );
 }
+
+    
 
     
