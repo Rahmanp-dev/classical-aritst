@@ -107,34 +107,36 @@ export function MusicSection({
                 <TabsTrigger key={genre} value={genre}>{genre}</TabsTrigger>
             ))}
             </TabsList>
-            {youtubeGenres.map(genre => (
-              <TabsContent key={genre} value={genre} className="w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {youtubeVideos.filter(v => v.genre === genre).map((video, index) => (
-                    <FloatingCard 
-                      key={video.id}
-                      variant="solid"
-                      delay={0.1 * index}
-                      className="overflow-hidden"
-                    >
-                      <div className="aspect-video relative">
-                        <iframe
-                          className="w-full h-full"
-                          src={video.url}
-                          title={video.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-semibold truncate" title={video.title}>{video.title}</h4>
-                      </div>
-                    </FloatingCard>
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
+            <>
+              {youtubeGenres.map(genre => (
+                <TabsContent key={genre} value={genre} className="w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {youtubeVideos.filter(v => v.genre === genre).map((video, index) => (
+                      <FloatingCard 
+                        key={video.id}
+                        variant="solid"
+                        delay={0.1 * index}
+                        className="overflow-hidden"
+                      >
+                        <div className="aspect-video relative">
+                          <iframe
+                            className="w-full h-full"
+                            src={video.url}
+                            title={video.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-semibold truncate" title={video.title}>{video.title}</h4>
+                        </div>
+                      </FloatingCard>
+                    ))}
+                  </div>
+                </TabsContent>
+              ))}
+            </>
           </Tabs>
         </motion.div>
       )}
