@@ -179,7 +179,6 @@ Aniruddh has performed extensively across India and has been featured in prestig
     { href: '#about', label: 'About' },
     { href: '#music', label: 'Performances' },
     { href: '#tour', label: 'Concerts' },
-    { href: '#testimonials', label: 'Testimonials' },
     { href: '#gallery', label: 'Gallery' },
     { href: '#contact', label: 'Contact' },
   ],

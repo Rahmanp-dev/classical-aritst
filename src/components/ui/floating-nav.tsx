@@ -17,7 +17,6 @@ const iconMap: { [key: string]: React.ElementType } = {
   about: User,
   music: Music,
   tour: Calendar,
-  testimonials: Star,
   gallery: Image,
   contact: Mail,
   default: Home

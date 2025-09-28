@@ -89,8 +89,8 @@ export default async function Home() {
           />
         ) : null}
         <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
-        <TestimonialsSection testimonials={content.testimonials} />
         <GallerySection galleryItems={content.galleryItems} />
+        <TestimonialsSection testimonials={content.testimonials} />
         <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 
