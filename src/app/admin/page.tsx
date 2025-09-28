@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -252,7 +252,14 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                         <FormItem><FormLabel>Artist Tagline (shown on hero)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="artistBio" render={({ field }) => (
-                        <FormItem><FormLabel>Artist Bio (shown on about section)</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                        <FormItem>
+                          <FormLabel>Artist Bio (shown on about section)</FormLabel>
+                          <FormControl><Textarea {...field} rows={8} /></FormControl>
+                          <FormDescription>
+                            This field supports Markdown for formatting (e.g., **bold**, *italics*, lists).
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
                       )} />
                     </CardContent>
                   </Card>

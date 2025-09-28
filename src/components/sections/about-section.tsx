@@ -8,6 +8,8 @@ import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/flo
 import { Award, Globe, Music2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type AboutProps = {
   artistImage: Omit<ImageType, "id" | "description">;
@@ -25,7 +27,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 export function AboutSection({ artistImage, artistName, artistBio, stats }: AboutProps) {
   // Truncate bio to the first paragraph
-  const firstParagraph = artistBio.split('\n')[0];
+  const firstParagraph = artistBio.split('\n\n')[0];
 
   return (
     <FloatingSection id="about" background="subtle">
@@ -73,13 +75,15 @@ export function AboutSection({ artistImage, artistName, artistBio, stats }: Abou
             </motion.h2>
             
             <motion.div 
-              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed space-y-4"
+              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <p className="text-lg">{firstParagraph}</p>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {firstParagraph}
+              </ReactMarkdown>
             </motion.div>
 
             <Dialog>
@@ -99,9 +103,9 @@ export function AboutSection({ artistImage, artistName, artistBio, stats }: Abou
                   <DialogTitle className="text-2xl font-headline">About {artistName}</DialogTitle>
                 </DialogHeader>
                 <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed py-4">
-                  {artistBio.split('\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {artistBio}
+                  </ReactMarkdown>
                 </div>
               </DialogContent>
             </Dialog>
