@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
 import Link from 'next/link';
 import { InstagramEmbed } from '../ui/instagram-embed';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const iconMap = {
   spotify: SpotifyIcon,
@@ -70,13 +70,16 @@ export function MusicSection({
           viewport={{ once: true }}
         >
           <Tabs defaultValue={defaultTab} className="w-full max-w-5xl mx-auto flex flex-col items-center">
-            <TabsList className="mb-8">
-              {featuredPlaylists.map(playlist => (
-                <TabsTrigger key={playlist.id} value={playlist.id}>
-                  {playlist.genre}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+            <ScrollArea className="w-full max-w-lg whitespace-nowrap rounded-lg">
+                <TabsList className="mb-8">
+                {featuredPlaylists.map(playlist => (
+                    <TabsTrigger key={playlist.id} value={playlist.id}>
+                    {playlist.genre}
+                    </TabsTrigger>
+                ))}
+                </TabsList>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
 
             {featuredPlaylists.map(playlist => (
               <TabsContent key={playlist.id} value={playlist.id} className="w-full">
@@ -113,7 +116,7 @@ export function MusicSection({
             {instagramReels.map((reel, index) => (
               <motion.div 
                 key={reel.id} 
-                className="w-[330px] h-[650px] bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 rounded-xl p-1 flex items-center justify-center"
+                className="w-full max-w-[330px] h-[650px] bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/10 rounded-xl p-1 flex items-center justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ 
