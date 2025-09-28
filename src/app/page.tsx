@@ -1,5 +1,4 @@
 
-import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { HeroSection } from "@/components/sections/hero-section";
 import { TourSection } from "@/components/sections/tour-section";
@@ -7,7 +6,6 @@ import { MusicSection } from "@/components/sections/music-section";
 import { GallerySection } from "@/components/sections/gallery-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { ContactSection } from "@/components/sections/contact-section";
-import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 import { FloatingNav } from "@/components/ui/floating-nav";
@@ -64,7 +62,6 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-dvh">
-      <Header navLinks={content.navLinks} artistName={content.artistName} />
       <FloatingNav navLinks={content.navLinks} />
       <main className="flex-1">
         <HeroSection 
