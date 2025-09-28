@@ -54,13 +54,11 @@ const formSchema = z.object({
     url: z.string().url('Must be a valid URL.'),
     icon: z.string().min(1, 'Icon name is required.'),
   })),
-  featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
   startListeningUrl: z.string().url("Must be a valid URL."),
-  youtubeVideos: z.array(z.object({
+  featuredPlaylists: z.array(z.object({
     id: z.string(),
-    url: z.string().url("Must be a valid YouTube embed URL."),
-    title: z.string().min(1, "Video title is required."),
-    genre: z.string().optional(),
+    genre: z.string().min(1, "Genre title is required."),
+    playlistUrl: z.string().url("Must be a valid YouTube embed URL."),
   })),
   instagramReels: z.array(z.object({
     id: z.string(),
@@ -133,7 +131,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
   const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
-  const { fields: youtubeVideoFields, append: appendYoutubeVideo, remove: removeYoutubeVideo } = useFieldArray({ control: form.control, name: "youtubeVideos" });
+  const { fields: featuredPlaylistFields, append: appendFeaturedPlaylist, remove: removeFeaturedPlaylist } = useFieldArray({ control: form.control, name: "featuredPlaylists" });
   const { fields: instagramReelFields, append: appendInstagramReel, remove: removeInstagramReel } = useFieldArray({ control: form.control, name: "instagramReels" });
   const { fields: testimonialFields, append: appendTestimonial, remove: removeTestimonial } = useFieldArray({ control: form.control, name: "testimonials" });
   
@@ -362,32 +360,22 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 
                 <TabsContent value="media">
                    <Card>
-                    <CardHeader><CardTitle>Featured Video & Media</CardTitle><CardDescription>Set the main featured video and collections of other media.</CardDescription></CardHeader>
+                    <CardHeader><CardTitle>Featured YouTube Playlists</CardTitle><CardDescription>Manage the featured playlists in the "Past Performances" section.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                      <FormField control={form.control} name="featuredVideoUrl" render={({ field }) => (
-                        <FormItem><FormLabel>Main Featured YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..." /></FormControl><FormMessage /></FormItem>
-                      )} />
-                      
-                       <h4 className="text-md font-semibold pt-4 border-t">YouTube Video Collection</h4>
-                       {youtubeVideoFields.map((field, index) => (
+                       {featuredPlaylistFields.map((field, index) => (
                         <div key={field.id} className="flex flex-col sm:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
-                            <FormField control={form.control} name={`youtubeVideos.${index}.title`} render={({ field }) => (
-                              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                            <FormField control={form.control} name={`featuredPlaylists.${index}.genre`} render={({ field }) => (
+                              <FormItem><FormLabel>Genre / Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField control={form.control} name={`youtubeVideos.${index}.url`} render={({ field }) => (
-                              <FormItem><FormLabel>YouTube Embed URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/..."/>
-                              </FormControl><FormMessage /></FormItem>
-                            )} />
-                             <FormField control={form.control} name={`youtubeVideos.${index}.genre`} render={({ field }) => (
-                              <FormItem><FormLabel>Genre</FormLabel><FormControl><Input {...field} placeholder="e.g., Classical Concerts"/>
-                              </FormControl><FormMessage /></FormItem>
+                            <FormField control={form.control} name={`featuredPlaylists.${index}.playlistUrl`} render={({ field }) => (
+                              <FormItem><FormLabel>YouTube Playlist Embed URL</FormLabel><FormControl><Input {...field} placeholder="https://www.youtube.com/embed/videoseries?list=..."/></FormControl><FormMessage /></FormItem>
                             )} />
                           </div>
-                           <Button type="button" variant="ghost" size="icon" onClick={() => removeYoutubeVideo(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                           <Button type="button" variant="ghost" size="icon" onClick={() => removeFeaturedPlaylist(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
                        ))}
-                       <Button type="button" variant="outline" onClick={() => appendYoutubeVideo({ id: `yt-${Date.now()}`, url: 'https://www.youtube.com/embed/', title: 'New Video', genre: 'Classical Concerts' })}>Add YouTube Video</Button>
+                       <Button type="button" variant="outline" onClick={() => appendFeaturedPlaylist({ id: `pl-${Date.now()}`, genre: 'New Playlist', playlistUrl: 'https://www.youtube.com/embed/videoseries?list=' })}>Add Playlist</Button>
 
                        <h4 className="text-md font-semibold pt-4 border-t">Instagram Reels Collection</h4>
                        {instagramReelFields.map((field, index) => (
@@ -781,9 +769,3 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
-
-    
-
-    
-
-    

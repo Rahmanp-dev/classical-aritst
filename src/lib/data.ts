@@ -1,5 +1,4 @@
 
-
 export type ImageType = {
   id: string;
   description: string;
@@ -54,11 +53,10 @@ export type Testimonial = {
   source: string;
 };
 
-export type YoutubeVideo = {
+export type FeaturedPlaylist = {
   id: string;
-  url: string;
-  title: string;
   genre: string;
+  playlistUrl: string;
 };
 
 export type InstagramReel = {
@@ -104,15 +102,13 @@ export const defaultContent = {
     { platform: 'SoundCloud', url: 'https://soundcloud.com', icon: 'soundcloud' },
   ],
 
-  featuredVideoUrl: "https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG",
   startListeningUrl: "#music",
 
-  youtubeVideos: [
-    { id: 'yt-1', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Classical Rendition', genre: 'Classical Concerts' },
-    { id: 'yt-2', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Devotional Song', genre: 'Devotional Songs' },
-    { id: 'yt-3', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Ranga Geetha Performance', genre: 'Ranga Geetha' },
-    { id: 'yt-4', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Jugalbandi Duet', genre: 'Jugalbandi' },
-    { id: 'yt-5', url: 'https://www.youtube.com/embed/LXb3EKWsInQ', title: 'Live Concert Highlight', genre: 'Classical Concerts' },
+  featuredPlaylists: [
+    { id: 'pl-1', genre: 'Classical Concerts', playlistUrl: 'https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG' },
+    { id: 'pl-2', genre: 'Devotional Songs', playlistUrl: 'https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG' },
+    { id: 'pl-3', genre: 'Ranga Geethe', playlistUrl: 'https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG' },
+    { id: 'pl-4', genre: 'Jugalbandi', playlistUrl: 'https://www.youtube.com/embed/videoseries?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG' },
   ],
 
   instagramReels: [
@@ -209,5 +205,3 @@ export const defaultContent = {
     location: "New York, NY",
   },
 };
-
-    

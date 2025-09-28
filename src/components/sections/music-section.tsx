@@ -1,10 +1,9 @@
 
 "use client";
 
-import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Link as MusicLink, YoutubeVideo, InstagramReel } from '@/lib/data';
+import type { Link as MusicLink, FeaturedPlaylist, InstagramReel } from '@/lib/data';
 import { Youtube, Play, ExternalLink, Instagram } from 'lucide-react';
 import { SpotifyIcon, AppleMusicIcon, SoundcloudIcon } from '@/components/icons';
 import { motion } from 'framer-motion';
@@ -28,57 +27,20 @@ const platformColors = {
 
 type MusicProps = {
   musicLinks: MusicLink[];
-  featuredVideoUrl: string;
   startListeningUrl: string;
-  youtubeVideos: YoutubeVideo[];
+  featuredPlaylists: FeaturedPlaylist[];
   instagramReels: InstagramReel[];
 }
 
 export function MusicSection({ 
   musicLinks, 
-  featuredVideoUrl, 
   startListeningUrl, 
-  youtubeVideos, 
+  featuredPlaylists, 
   instagramReels 
 }: MusicProps) {
 
-  const youtubeGenres = useMemo(() => {
-    const genres = new Set(youtubeVideos.map(v => v.genre).filter(Boolean));
-    return Array.from(genres);
-  }, [youtubeVideos]);
-  
-  const tabTriggers = youtubeGenres.map(genre => (
-    <TabsTrigger key={genre} value={genre}>{genre}</TabsTrigger>
-  ));
-
-  const tabContents = youtubeGenres.map(genre => (
-    <TabsContent key={genre} value={genre} className="w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {youtubeVideos.filter(v => v.genre === genre).map((video, index) => (
-          <FloatingCard 
-            key={video.id}
-            variant="solid"
-            delay={0.1 * index}
-            className="overflow-hidden"
-          >
-            <div className="aspect-video relative">
-              <iframe
-                className="w-full h-full"
-                src={video.url}
-                title={video.title}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div className="p-4">
-              <h4 className="font-semibold truncate" title={video.title}>{video.title}</h4>
-            </div>
-          </FloatingCard>
-        ))}
-      </div>
-    </TabsContent>
-  ));
+  const hasPlaylists = featuredPlaylists && featuredPlaylists.length > 0;
+  const defaultTab = hasPlaylists ? featuredPlaylists[0].id : "";
 
   return (
     <FloatingSection id="music" background="gradient">
@@ -98,48 +60,44 @@ export function MusicSection({
         </p>
       </motion.div>
 
-      {/* Featured Video */}
-      <motion.div
-        className="mb-16"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        viewport={{ once: true }}
-      >
-        <h3 className="text-2xl font-bold font-headline mb-8 text-center">
-          Featured Performance
-        </h3>
-        
-        <FloatingCard variant="glass" className="max-w-5xl mx-auto overflow-hidden">
-          <div className="aspect-video bg-gradient-to-br from-background to-background/50 rounded-lg overflow-hidden relative group">
-            <iframe
-              className="w-full h-full"
-              src={featuredVideoUrl}
-              title="Featured Performance"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </FloatingCard>
-      </motion.div>
-
-      {/* YouTube Collection */}
-        <motion.div 
+      {/* Featured Playlists */}
+      {hasPlaylists && (
+        <motion.div
           className="mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-bold font-headline mb-8 text-center">YouTube by Genres</h3>
-          <Tabs defaultValue={youtubeGenres[0]} className="w-full max-w-6xl mx-auto flex flex-col items-center">
-            <TabsList>
-              {tabTriggers}
+          <Tabs defaultValue={defaultTab} className="w-full max-w-5xl mx-auto flex flex-col items-center">
+            <TabsList className="mb-8">
+              {featuredPlaylists.map(playlist => (
+                <TabsTrigger key={playlist.id} value={playlist.id}>
+                  {playlist.genre}
+                </TabsTrigger>
+              ))}
             </TabsList>
-            {tabContents}
+
+            {featuredPlaylists.map(playlist => (
+              <TabsContent key={playlist.id} value={playlist.id} className="w-full">
+                <FloatingCard variant="glass" className="overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-background to-background/50 rounded-lg overflow-hidden relative group">
+                    <iframe
+                      className="w-full h-full"
+                      src={playlist.playlistUrl}
+                      title={`YouTube Playlist: ${playlist.genre}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </FloatingCard>
+              </TabsContent>
+            ))}
           </Tabs>
         </motion.div>
+      )}
+
 
       {/* Instagram Reels Collection */}
       {instagramReels && instagramReels.length > 0 && (

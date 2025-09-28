@@ -78,12 +78,11 @@ export default async function Home() {
           artistBio={content.artistBio}
           stats={content.aboutStats}
         />
-        {content.youtubeVideos && content.youtubeVideos.length > 0 && (
+        {content.featuredPlaylists && content.featuredPlaylists.length > 0 && (
             <MusicSection 
               musicLinks={content.musicLinks}
-              featuredVideoUrl={content.featuredVideoUrl}
               startListeningUrl={content.startListeningUrl}
-              youtubeVideos={content.youtubeVideos}
+              featuredPlaylists={content.featuredPlaylists}
               instagramReels={content.instagramReels}
             />
         )}
@@ -100,5 +99,3 @@ export default async function Home() {
     </div>
   );
 }
-
-    

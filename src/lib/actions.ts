@@ -94,14 +94,12 @@ const formSchema = z.object({
     icon: z.string().min(1, 'Icon name is required.'),
   })),
 
-  featuredVideoUrl: z.string().url("Must be a valid YouTube embed URL."),
   startListeningUrl: z.string().url("Must be a valid URL."),
 
-  youtubeVideos: z.array(z.object({
+  featuredPlaylists: z.array(z.object({
     id: z.string(),
-    url: z.string().url("Must be a valid YouTube embed URL."),
-    title: z.string().min(1, "Video title is required."),
-    genre: z.string().optional(),
+    genre: z.string().min(1, "Genre title is required."),
+    playlistUrl: z.string().url("Must be a valid YouTube embed URL."),
   })),
 
   instagramReels: z.array(z.object({
@@ -296,5 +294,3 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
-
-    
