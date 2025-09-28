@@ -9,6 +9,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 import { FloatingNav } from "@/components/ui/floating-nav";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
 
 // Correct deep merge utility that handles arrays properly
 function deepMerge(target: any, source: any): SiteContent {
@@ -25,28 +26,27 @@ function deepMerge(target: any, source: any): SiteContent {
         } else {
           output[key] = deepMerge(target[key], sourceValue);
         }
-      } else if (Array.isArray(sourceValue)) {
-        // If the source has an array, prefer it, unless it's empty.
-        // This prevents an empty array from the DB from overwriting default content.
-        if(sourceValue.length > 0) {
-          output[key] = sourceValue;
-        } else if (!target[key] || target[key].length === 0) {
-          output[key] = sourceValue;
-        }
       } else {
+        // Overwrite target array or value with source value if it exists
         output[key] = sourceValue;
       }
     });
   }
 
-  // Ensure all keys from defaultContent are present, even if not in source
+  // Ensure all keys from defaultContent are present
   Object.keys(defaultContent).forEach(key => {
+    const defaultKeyValue = (defaultContent as any)[key];
     if (!(key in output)) {
-      output[key] = (defaultContent as any)[key];
-    }
-    // ensure nested objects are also carried over if they don't exist at all in the source
-    if (isObject((defaultContent as any)[key]) && (!output[key] || !isObject(output[key]))) {
-        output[key] = deepMerge(output[key] || {}, (defaultContent as any)[key]);
+      output[key] = defaultKeyValue;
+    } else if (isObject(defaultKeyValue) && !isObject(output[key])) {
+      // If db has a non-object but default has an object, prefer default structure
+      output[key] = defaultKeyValue;
+    } else if (isObject(defaultKeyValue) && isObject(output[key])) {
+      // If both are objects, merge them ensuring all default keys are present
+      output[key] = deepMerge(defaultKeyValue, output[key]);
+    } else if (Array.isArray(defaultKeyValue)) {
+      // If default is an array, take it. This is the fix.
+      output[key] = defaultKeyValue;
     }
   });
 
@@ -56,7 +56,7 @@ function deepMerge(target: any, source: any): SiteContent {
 
 export default async function Home() {
   const dbContent = await getSiteContent();
-  // Use a deep merge to ensure all nested properties from defaultContent are present
+  // The merge now correctly prioritizes the defaultContent's array structure
   const content = deepMerge(defaultContent, dbContent);
 
 
