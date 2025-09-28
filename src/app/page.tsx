@@ -10,6 +10,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
+import { FloatingNav } from "@/components/ui/floating-nav";
 
 // Correct deep merge utility that handles arrays properly
 function deepMerge(target: any, source: any): SiteContent {
@@ -64,6 +65,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-dvh">
       <Header navLinks={content.navLinks} artistName={content.artistName} />
+      <FloatingNav navLinks={content.navLinks} />
       <main className="flex-1">
         <HeroSection 
           heroImage={content.heroImage}
@@ -78,17 +80,17 @@ export default async function Home() {
           artistBio={content.artistBio}
           stats={content.aboutStats}
         />
-        {content.featuredPlaylists && content.featuredPlaylists.length > 0 && (
-            <MusicSection 
-              musicLinks={content.musicLinks}
-              startListeningUrl={content.startListeningUrl}
-              featuredPlaylists={content.featuredPlaylists}
-              instagramReels={content.instagramReels}
-            />
-        )}
-        <GallerySection galleryItems={content.galleryItems} />
+        {(content.featuredPlaylists && content.featuredPlaylists.length > 0) || (content.instagramReels && content.instagramReels.length > 0) ? (
+          <MusicSection 
+            musicLinks={content.musicLinks}
+            startListeningUrl={content.startListeningUrl}
+            featuredPlaylists={content.featuredPlaylists}
+            instagramReels={content.instagramReels}
+          />
+        ) : null}
         <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
         <TestimonialsSection testimonials={content.testimonials} />
+        <GallerySection galleryItems={content.galleryItems} />
         <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 

@@ -71,7 +71,9 @@ export type InstagramReel = {
 export const defaultContent = {
   artistName: "Aniruddh Aithal",
   artistTagline: "Hindustani Classical Musician",
-  artistBio: "Aniruddh Aithal is a 24-year-old Hindustani classical musician with expertise in vocal music. He started formal training at 10 years old and has trained for 8 years with Smt. Geetha Garud Prithviraj, and now receives training from Dr. Ashok Huggannavar. He's an award-winning artist and a graded artist of All India Radio, and has received scholarships from CCRT and the Karnataka Sangeetha Nritya academy.",
+  artistBio: `Aniruddh Aithal is a 24-year-old Hindustani classical musician with expertise in vocal music. He started formal training at 10 years old and has trained for 8 years with Smt. Geetha Garud Prithviraj, and now receives training from Dr. Ashok Huggannavar.
+He's an award-winning artist and a graded artist of All India Radio, and has received scholarships from CCRT and the Karnataka Sangeetha Nritya academy.
+Aniruddh has performed extensively across India and has been featured in prestigious music festivals. His innovative approach to traditional compositions has earned him critical acclaim and a growing following among classical music connoisseurs.`,
   
   heroImage: {
     desktop: {
@@ -175,8 +177,8 @@ export const defaultContent = {
 
   navLinks: [
     { href: '#about', label: 'About' },
-    { href: '#music', label: 'Past Performances' },
-    { href: '#tour', label: 'Upcoming Concerts' },
+    { href: '#music', label: 'Performances' },
+    { href: '#tour', label: 'Concerts' },
     { href: '#testimonials', label: 'Testimonials' },
     { href: '#gallery', label: 'Gallery' },
     { href: '#contact', label: 'Contact' },

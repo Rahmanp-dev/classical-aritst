@@ -6,6 +6,8 @@ import type { ImageType, AboutStat } from '@/lib/data';
 import { motion } from 'framer-motion';
 import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
 import { Award, Globe, Music2, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 type AboutProps = {
   artistImage: Omit<ImageType, "id" | "description">;
@@ -22,6 +24,8 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 export function AboutSection({ artistImage, artistName, artistBio, stats }: AboutProps) {
+  // Truncate bio to the first paragraph
+  const firstParagraph = artistBio.split('\n')[0];
 
   return (
     <FloatingSection id="about" background="subtle">
@@ -69,14 +73,38 @@ export function AboutSection({ artistImage, artistName, artistBio, stats }: Abou
             </motion.h2>
             
             <motion.div 
-              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed"
+              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed space-y-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <p className="text-lg">{artistBio}</p>
+              <p className="text-lg">{firstParagraph}</p>
             </motion.div>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                 <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    className="mt-6"
+                  >
+                    <Button variant="link" className="px-0">Read More</Button>
+                </motion.div>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[650px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-headline">About {artistName}</DialogTitle>
+                </DialogHeader>
+                <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed py-4">
+                  {artistBio.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Stats Grid */}
@@ -110,5 +138,3 @@ export function AboutSection({ artistImage, artistName, artistBio, stats }: Abou
     </FloatingSection>
   );
 }
-
-    
