@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -70,8 +71,8 @@ export function MusicSection({
           viewport={{ once: true }}
         >
           <Tabs defaultValue={defaultTab} className="w-full max-w-5xl mx-auto flex flex-col items-center">
-            <ScrollArea className="w-full max-w-lg whitespace-nowrap rounded-lg">
-                <TabsList className="mb-8">
+            <ScrollArea className="w-full max-w-full md:max-w-lg whitespace-nowrap rounded-lg">
+                <TabsList className="mb-8 justify-start md:justify-center">
                 {featuredPlaylists.map(playlist => (
                     <TabsTrigger key={playlist.id} value={playlist.id}>
                     {playlist.genre}
