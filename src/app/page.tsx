@@ -56,7 +56,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-dvh">
-      <FloatingNav navLinks={content.navLinks} />
+      <FloatingNav navLinks={defaultContent.navLinks} />
       <main className="flex-1">
         <HeroSection 
           heroImage={content.heroImage}
