@@ -35,7 +35,6 @@ const imageSchema = z.object({
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
-  artistBio: z.string().min(1, 'Artist bio is required.'),
   heroImage: z.object({
     desktop: imageSchema,
     mobile: imageSchema,
@@ -67,11 +66,6 @@ const formSchema = z.object({
       image: imageSchema,
   })),
   artistImage: imageSchema,
-  aboutStats: z.array(z.object({
-    label: z.string().min(1, "Label is required."),
-    value: z.string().min(1, "Value is required."),
-    icon: z.string().min(1, "Icon name is required."),
-  })),
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -124,7 +118,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: navLinkFields, append: appendNavLink, remove: removeNavLink } = useFieldArray({ control: form.control, name: "navLinks" });
   const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
-  const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   const { fields: featuredPlaylistFields, append: appendFeaturedPlaylist, remove: removeFeaturedPlaylist } = useFieldArray({ control: form.control, name: "featuredPlaylists" });
   const { fields: instagramReelFields, append: appendInstagramReel, remove: removeInstagramReel } = useFieldArray({ control: form.control, name: "instagramReels" });
   const { fields: testimonialFields, append: appendTestimonial, remove: removeTestimonial } = useFieldArray({ control: form.control, name: "testimonials" });
@@ -237,23 +230,13 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
               <div className="mt-6 space-y-8">
                 <TabsContent value="general">
                   <Card>
-                    <CardHeader><CardTitle>General Information</CardTitle><CardDescription>Manage the main artist details and biography.</CardDescription></CardHeader>
+                    <CardHeader><CardTitle>General Information</CardTitle><CardDescription>Manage the main artist details.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
                       <FormField control={form.control} name="artistName" render={({ field }) => (
                         <FormItem><FormLabel>Artist Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                       )} />
                       <FormField control={form.control} name="artistTagline" render={({ field }) => (
                         <FormItem><FormLabel>Artist Tagline (shown on hero)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                      )} />
-                      <FormField control={form.control} name="artistBio" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Artist Bio (shown on about section)</FormLabel>
-                          <FormControl><Textarea {...field} rows={8} /></FormControl>
-                          <FormDescription>
-                            This field supports Markdown for formatting (e.g., **bold**, *italics*, lists).
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
                       )} />
                     </CardContent>
                   </Card>

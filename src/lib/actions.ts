@@ -70,7 +70,6 @@ const imageSchema = z.object({
 const formSchema = z.object({
   artistName: z.string().min(1, 'Artist name is required.'),
   artistTagline: z.string().min(1, 'Artist tagline is required.'),
-  artistBio: z.string().min(1, 'Artist bio is required.'),
   
   heroImage: z.object({
     desktop: imageSchema,
@@ -111,12 +110,6 @@ const formSchema = z.object({
 
   artistImage: imageSchema,
 
-  aboutStats: z.array(z.object({
-    label: z.string().min(1, "Label is required."),
-    value: z.string().min(1, "Value is required."),
-    icon: z.string().min(1, "Icon name is required."),
-  })),
-
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -156,38 +149,35 @@ export type SiteContent = z.infer<typeof formSchema>;
 const CONTENT_ID = "main_content";
 
 // Correct deep merge utility that handles arrays properly
-function deepMerge(target: any, source: any): SiteContent {
+function deepMerge(target: any, source: any): any {
   const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
 
-  const output = { ...target };
+  let output = { ...target };
 
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach(key => {
-      const sourceValue = source[key];
-      if (isObject(sourceValue)) {
+      if (isObject(source[key])) {
         if (!(key in target)) {
-          Object.assign(output, { [key]: sourceValue });
+          Object.assign(output, { [key]: source[key] });
         } else {
-          output[key] = deepMerge(target[key], sourceValue);
+          output[key] = deepMerge(target[key], source[key]);
         }
-      } else if (Array.isArray(sourceValue) && sourceValue.length > 0) {
-        // If the source has an array, prefer it.
-        // This is important for lists managed by the admin panel.
-        output[key] = sourceValue;
-      } else if (sourceValue !== undefined && sourceValue !== null) {
-        Object.assign(output, { [key]: sourceValue });
+      } else if (Array.isArray(source[key]) && source[key].length > 0) {
+        output[key] = source[key];
+      } else if (source[key] !== undefined) {
+        output[key] = source[key];
       }
     });
   }
-
-  // Ensure all keys from defaultContent are present, even if not in source
-  Object.keys(defaultContent).forEach(key => {
+  
+  // Ensure all keys from defaultContent are present if they weren't in the DB
+  for (const key in target) {
     if (!(key in output)) {
-      output[key] = (defaultContent as any)[key];
+      output[key] = (target as any)[key];
     }
-  });
+  }
 
-  return output as SiteContent;
+  return output;
 }
 
 
