@@ -59,9 +59,9 @@ export function AboutSection({ artistImage, artistName }: AboutProps) {
           
           <p>He considers himself fortunate to have found two Gurus who are extremely patient, methodical, and prolific in their teaching. Their training has moulded him into a musician who is not only technically sound but also aesthetically appealing. His artistry is evidenced by the numerous prizes he has won at both state and national levels.</p>
 
-          <div className="my-12 text-center">
-            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6">Awards and Achievements</h3>
-            <ul className="list-none p-0 space-y-3 text-lg">
+          <div className="my-12">
+            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 text-center">Awards and Achievements</h3>
+            <ul className="list-disc pl-5 space-y-3 text-lg">
               <li>All India Radio National Level Competition (2017) – Winner</li>
               <li>University Level Medals – Youth Festivals during his engineering studies</li>
               <li>Scholarships – Awarded by the Centre for Cultural Resources and Training (CCRT), New Delhi and the Karnataka Sangeetha Nruthya Academy</li>
@@ -72,9 +72,9 @@ export function AboutSection({ artistImage, artistName }: AboutProps) {
              <p className="mt-4">In 2025, Aniruddh also completed his first tour of the US and Canada, receiving great appreciation and response.</p>
           </div>
           
-          <div className="my-12 text-center">
-            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6">Notable Performances</h3>
-            <ul className="list-none p-0 space-y-3 text-lg">
+          <div className="my-12">
+            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 text-center">Notable Performances</h3>
+            <ul className="list-disc pl-5 space-y-3 text-lg">
                 <li>CentreStage Festival (December 2023) – Sundar Nursery, New Delhi (featured among 5 promising artists of India)</li>
                 <li>Sawai Gandharav Festival – Kundgol, alongside established artists</li>
                 <li>IIT Chennai Cultural Outreach – Encouraging young talent across India</li>
@@ -84,13 +84,13 @@ export function AboutSection({ artistImage, artistName }: AboutProps) {
             <p className="mt-4">In addition to classical music, Aniruddh has received training in rare art forms such as <strong>Rangageethes</strong> (theatre songs), <strong>Dasarapadas</strong>, <strong>Vachanas</strong>, and <strong>Tatvapadas</strong> – genres that are increasingly rare and endangered.</p>
           </div>
 
-          <div className="my-12 text-center">
-            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6">Academic Pursuits</h3>
+          <div className="my-12">
+            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 text-center">Academic Pursuits</h3>
             <p>Alongside his music, Aniruddh’s passion for applied sciences led him to pursue an <strong>Engineering degree</strong>, which he completed in 2020. He is currently completing his Masters in <strong>Data Science and Analytics</strong> at the <strong>University of Michigan, Ann Arbor</strong>.</p>
           </div>
 
-          <div className="my-12 text-center">
-            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6">A True Representation of Today’s Youth</h3>
+          <div className="my-12">
+            <h3 className="text-2xl md:text-3xl font-headline font-semibold text-foreground mb-6 text-center">A True Representation of Today’s Youth</h3>
             <p>With his multifaceted interests, formidable skills, and deep passion for both music and science, Aniruddh Aithal truly represents the spirit of the youth of India today – multitalented, confident, and articulate.</p>
           </div>
         </motion.div>
