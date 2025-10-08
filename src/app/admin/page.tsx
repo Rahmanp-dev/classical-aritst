@@ -44,11 +44,6 @@ const formSchema = z.object({
     listenNow: z.string().url("Must be a valid URL."),
     upcomingShows: z.string().url("Must be a valid URL."),
   }),
-  infoCards: z.array(z.object({
-    label: z.string().min(1, "Label is required."),
-    value: z.string().min(1, "Value is required."),
-    icon: z.string().min(1, "Icon name is required."),
-  })).length(3, "There must be exactly 3 info cards."),
   musicLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -129,7 +124,6 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
   const { fields: navLinkFields, append: appendNavLink, remove: removeNavLink } = useFieldArray({ control: form.control, name: "navLinks" });
   const { fields: galleryItemFields, append: appendGalleryItem, remove: removeGalleryItem } = useFieldArray({ control: form.control, name: "galleryItems" });
   const { fields: tourDateFields, append: appendTourDate, remove: removeTourDate } = useFieldArray({ control: form.control, name: "tourDates" });
-  const { fields: infoCardFields } = useFieldArray({ control: form.control, name: "infoCards" });
   const { fields: aboutStatFields } = useFieldArray({ control: form.control, name: "aboutStats" });
   const { fields: featuredPlaylistFields, append: appendFeaturedPlaylist, remove: removeFeaturedPlaylist } = useFieldArray({ control: form.control, name: "featuredPlaylists" });
   const { fields: instagramReelFields, append: appendInstagramReel, remove: removeInstagramReel } = useFieldArray({ control: form.control, name: "instagramReels" });
@@ -317,27 +311,7 @@ function AdminDashboard({ initialData, onLogout }: { initialData: SiteContent; o
                 </TabsContent>
                 
                 <TabsContent value="links">
-                  <Card>
-                    <CardHeader><CardTitle>Hero Info Cards</CardTitle><CardDescription>Manage the three small info cards in the hero section.</CardDescription></CardHeader>
-                    <CardContent className="space-y-4 pt-6">
-                      {infoCardFields.map((field, index) => (
-                        <div key={field.id} className="flex flex-col md:flex-row gap-4 items-start p-4 border rounded-md">
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
-                            <FormField control={form.control} name={`infoCards.${index}.label`} render={({ field }) => (
-                              <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField control={form.control} name={`infoCards.${index}.value`} render={({ field }) => (
-                              <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField control={form.control} name={`infoCards.${index}.icon`} render={({ field }) => (
-                              <FormItem><FormLabel>Icon Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Headphones, Radio" /></FormControl><FormMessage /></FormItem>
-                            )} />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                   <Card className="mt-8">
+                   <Card>
                     <CardHeader><CardTitle>Music Section Links</CardTitle><CardDescription>Manage links to streaming platforms.</CardDescription></CardHeader>
                     <CardContent className="space-y-6 pt-6">
                       <FormField control={form.control} name="startListeningUrl" render={({ field }) => (
@@ -776,3 +750,5 @@ export default function AdminPage() {
 
   return <AdminDashboard initialData={initialData} onLogout={handleLogout} />;
 }
+
+    

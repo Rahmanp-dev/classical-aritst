@@ -34,12 +34,6 @@ export type GalleryItem = {
   };
 };
 
-export type InfoCard = {
-  label: string;
-  value: string;
-  icon: string;
-};
-
 export type AboutStat = {
   label: string;
   value: string;
@@ -90,12 +84,6 @@ Aniruddh has performed extensively across India and has been featured in prestig
     listenNow: "#music",
     upcomingShows: "#tour",
   },
-  
-  infoCards: [
-    { label: "Latest Album", value: "Now Streaming", icon: "Headphones" },
-    { label: "Live Shows", value: "World Tour 2025", icon: "Radio" },
-    { label: "Platforms", value: "All Major Services", icon: "Volume2" }
-  ],
   
   musicLinks: [
     { platform: 'Spotify', url: 'https://open.spotify.com', icon: 'spotify' },
@@ -206,3 +194,5 @@ Aniruddh has performed extensively across India and has been featured in prestig
     location: "New York, NY",
   },
 };
+
+    

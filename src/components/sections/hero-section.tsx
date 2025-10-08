@@ -5,7 +5,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import type { ImageType, InfoCard } from '@/lib/data';
+import type { ImageType } from '@/lib/data';
 import { Music, Calendar, Play, Sparkles, Volume2, Headphones, Radio } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -18,7 +18,6 @@ type HeroProps = {
   artistName: string;
   artistTagline: string;
   heroCTAs: { listenNow: string; upcomingShows: string };
-  infoCards: InfoCard[];
 }
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -74,7 +73,7 @@ const MusicVisualizer = () => {
 };
 
 
-export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, infoCards }: HeroProps) {
+export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs }: HeroProps) {
   return (
     <section 
       id="home" 
@@ -205,28 +204,6 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
             </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-            {infoCards.map((item, index) => {
-               const IconComponent = iconMap[item.icon] || Sparkles;
-               const colorClass = ["from-green-500 to-emerald-600", "from-orange-500 to-red-600", "from-blue-500 to-purple-600"][index % 3];
-               return (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 1.2 + index * 0.15, duration: 0.6 }}
-                  whileHover={{ scale: 1.08, y: -8 }}
-                  className="group glass-card-strong rounded-2xl p-6 md:p-8 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 cursor-pointer"
-                >
-                  <div className={`bg-gradient-to-br ${colorClass} p-4 rounded-xl mb-4 mx-auto w-fit group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-white/60 text-sm uppercase tracking-wide mb-2 font-semibold">{item.label}</h3>
-                  <p className="text-white font-bold text-lg sm:text-xl group-hover:text-primary transition-colors duration-300">{item.value}</p>
-                </motion.div>
-              );
-            })}
-          </div>
         </div>
       </div>
 
@@ -251,7 +228,5 @@ export function HeroSection({ heroImage, artistName, artistTagline, heroCTAs, in
     </section>
   );
 }
-
-    
 
     

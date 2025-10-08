@@ -82,12 +82,6 @@ const formSchema = z.object({
     upcomingShows: z.string().url("Must be a valid URL."),
   }),
 
-  infoCards: z.array(z.object({
-    label: z.string().min(1, "Label is required."),
-    value: z.string().min(1, "Value is required."),
-    icon: z.string().min(1, "Icon name is required."),
-  })).length(3, "There must be exactly 3 info cards."),
-
   musicLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
     url: z.string().url('Must be a valid URL.'),
@@ -176,11 +170,11 @@ function deepMerge(target: any, source: any): SiteContent {
         } else {
           output[key] = deepMerge(target[key], sourceValue);
         }
-      } else if (Array.isArray(sourceValue)) {
+      } else if (Array.isArray(sourceValue) && sourceValue.length > 0) {
         // If the source has an array, prefer it.
         // This is important for lists managed by the admin panel.
         output[key] = sourceValue;
-      } else {
+      } else if (sourceValue !== undefined && sourceValue !== null) {
         Object.assign(output, { [key]: sourceValue });
       }
     });
@@ -294,3 +288,5 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
+
+    

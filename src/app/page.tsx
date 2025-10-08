@@ -1,4 +1,5 @@
 
+
 import { Footer } from "@/components/layout/footer";
 import { HeroSection } from "@/components/sections/hero-section";
 import { TourSection } from "@/components/sections/tour-section";
@@ -9,7 +10,6 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 import { FloatingNav } from "@/components/ui/floating-nav";
-import { TestimonialsSection } from "@/components/sections/testimonials-section";
 
 // Deep merge utility that correctly prioritizes database content, especially for arrays.
 function deepMerge(target: any, source: any): SiteContent {
@@ -29,9 +29,13 @@ function deepMerge(target: any, source: any): SiteContent {
           // Both are objects, recurse
           output[key] = deepMerge(target[key], source[key]);
         }
-      } else {
-        // This is the crucial part: if the source has a value (primitive, or an array),
-        // it should overwrite the target's default value. This ensures DB content is prioritized.
+      } else if (Array.isArray(source[key]) && source[key].length > 0) {
+        // This is the crucial part: if the source has a non-empty array,
+        // it should overwrite the target's default array. This ensures DB content is prioritized.
+        output[key] = source[key];
+      }
+      else if (source[key] !== undefined && source[key] !== null) {
+        // For primitives, if the source has a value, it overwrites the default.
         output[key] = source[key];
       }
     }
@@ -63,7 +67,6 @@ export default async function Home() {
           artistName={content.artistName}
           artistTagline={content.artistTagline}
           heroCTAs={content.heroCTAs}
-          infoCards={content.infoCards}
         />
         <AboutSection 
           artistImage={content.artistImage}
@@ -91,3 +94,5 @@ export default async function Home() {
     </div>
   );
 }
+
+    
