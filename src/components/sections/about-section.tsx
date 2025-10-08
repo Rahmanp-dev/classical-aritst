@@ -4,9 +4,7 @@
 import Image from 'next/image';
 import type { ImageType } from '@/lib/data';
 import { motion } from 'framer-motion';
-import { FloatingCard, FloatingSection } from '@/components/ui/floating-card';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { FloatingSection } from '@/components/ui/floating-card';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -17,91 +15,63 @@ type AboutProps = {
 }
 
 export function AboutSection({ artistImage, artistName, artistBio }: AboutProps) {
-  // Truncate bio to the first paragraph
-  const firstParagraph = artistBio.split('\n\n')[0];
+  // Split the bio content to place the image in the middle.
+  // We'll split it by a special marker or, if not present, by paragraphs.
+  const bioParts = artistBio.split('---');
+  const firstPart = bioParts[0];
+  const secondPart = bioParts.length > 1 ? bioParts.slice(1).join('---') : '';
 
   return (
     <FloatingSection id="about" background="subtle">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        
-        {/* Image Section */}
+      <div className="max-w-4xl mx-auto">
+        {/* Top part of the Bio */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
+          className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed mb-16 text-center"
         >
-          <FloatingCard variant="glass" className="overflow-hidden">
-            <div className="relative aspect-[4/5] rounded-xl overflow-hidden">
-              <Image
-                src={artistImage.imageUrl}
-                alt={`Portrait of ${artistName}`}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                data-ai-hint={artistImage.imageHint}
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
-          </FloatingCard>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {firstPart}
+          </ReactMarkdown>
         </motion.div>
 
-        {/* Content Section */}
+        {/* Image Section */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           viewport={{ once: true }}
-          className="space-y-8"
+          className="mb-16"
         >
-          <div>
-            <motion.h2 
-              className="text-4xl md:text-6xl font-bold font-headline mb-6 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              About {artistName}
-            </motion.h2>
-            
-            <motion.div 
-              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {firstParagraph}
-              </ReactMarkdown>
-            </motion.div>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    viewport={{ once: true }}
-                    className="mt-6"
-                  >
-                    <Button variant="link" className="px-0">Read More</Button>
-                </motion.div>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[650px] max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-headline">About {artistName}</DialogTitle>
-                </DialogHeader>
-                <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed py-4">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {artistBio}
-                  </ReactMarkdown>
-                </div>
-              </DialogContent>
-            </Dialog>
+          <div className="relative aspect-[4/3] max-w-2xl mx-auto rounded-xl overflow-hidden shadow-2xl shadow-black/20 border border-border/20">
+            <Image
+              src={artistImage.imageUrl}
+              alt={`Portrait of ${artistName}`}
+              fill
+              className="object-cover"
+              data-ai-hint={artistImage.imageHint}
+              sizes="(max-width: 768px) 100vw, 66vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
           </div>
         </motion.div>
+
+        {/* Bottom part of the Bio (Accomplishments) */}
+        {secondPart && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+            viewport={{ once: true }}
+            className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed"
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {secondPart}
+            </ReactMarkdown>
+          </motion.div>
+        )}
       </div>
     </FloatingSection>
   );
