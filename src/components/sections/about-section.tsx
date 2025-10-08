@@ -2,10 +2,9 @@
 "use client";
 
 import Image from 'next/image';
-import type { ImageType, AboutStat } from '@/lib/data';
+import type { ImageType } from '@/lib/data';
 import { motion } from 'framer-motion';
-import { FloatingCard, FloatingSection, FloatingGrid } from '@/components/ui/floating-card';
-import { Award, Globe, Music2, Sparkles } from 'lucide-react';
+import { FloatingCard, FloatingSection } from '@/components/ui/floating-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import ReactMarkdown from 'react-markdown';
