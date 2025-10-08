@@ -10,6 +10,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 import { FloatingNav } from "@/components/ui/floating-nav";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
 
 // This function now correctly prioritizes database content for arrays,
 // ensuring admin panel changes for playlists, gallery, etc., are always displayed.
@@ -31,7 +32,7 @@ function deepMerge(target: any, source: any): any {
         // If the database (source) has a non-empty array, it completely
         // overwrites the default. This ensures your admin edits are not ignored.
         output[key] = source[key];
-      } else if (source[key] !== undefined) {
+      } else if (source[key] !== undefined && source[key] !== null) { // Added null check
         // For primitives (strings, numbers, booleans), database value wins.
         output[key] = source[key];
       }
@@ -84,6 +85,7 @@ export default async function Home() {
         ) : null}
         <TourSection tourDates={content.tourDates} tourImage={content.tourImage} />
         <GallerySection galleryItems={content.galleryItems} />
+        <TestimonialsSection testimonials={content.testimonials} />
         <ContactSection contactInfo={content.contact} />
       </main>
       <Footer 
