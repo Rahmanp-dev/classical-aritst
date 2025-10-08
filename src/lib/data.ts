@@ -151,11 +151,7 @@ Aniruddh has performed extensively across India and has been featured in prestig
     imageHint: "artist portrait"
   },
 
-  aboutStats: [
-    { label: 'Awards', value: '12+', icon: 'Award' },
-    { label: 'Countries', value: '30+', icon: 'Globe' },
-    { label: 'Albums', value: '8', icon: 'Music2' },
-  ],
+  aboutStats: [],
 
   socialLinks: [
     { platform: 'Instagram', url: 'https://instagram.com', icon: 'instagram' },
@@ -194,5 +190,3 @@ Aniruddh has performed extensively across India and has been featured in prestig
     location: "New York, NY",
   },
 };
-
-    

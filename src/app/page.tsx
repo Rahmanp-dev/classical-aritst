@@ -11,40 +11,40 @@ import { getSiteContent, type SiteContent } from "@/lib/actions";
 import { defaultContent } from "@/lib/data";
 import { FloatingNav } from "@/components/ui/floating-nav";
 
-// Deep merge utility that correctly prioritizes database content, especially for arrays.
-function deepMerge(target: any, source: any): SiteContent {
+function deepMerge(dbContent: any, defaultContent: any): SiteContent {
   const isObject = (obj: any) => obj && typeof obj === 'object' && !Array.isArray(obj);
 
   // Start with a copy of the default content structure
-  const output = { ...target };
+  const output = { ...defaultContent };
 
   // Iterate over the database content (source)
-  if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
+  if (isObject(defaultContent) && isObject(dbContent)) {
+    for (const key in dbContent) {
+      if (Array.isArray(dbContent[key]) && dbContent[key].length > 0) {
+        // This is the crucial part: if the DB has a non-empty array,
+        // it should overwrite the default array.
+        output[key] = dbContent[key];
+      }
+      else if (isObject(dbContent[key])) {
         // If the key doesn't exist in the target, or isn't an object, just take the source's object
-        if (!(key in target) || !isObject(target[key])) {
-          output[key] = source[key];
+        if (!(key in defaultContent) || !isObject(defaultContent[key])) {
+          output[key] = dbContent[key];
         } else {
           // Both are objects, recurse
-          output[key] = deepMerge(target[key], source[key]);
+          output[key] = deepMerge(dbContent[key], defaultContent[key]);
         }
-      } else if (Array.isArray(source[key]) && source[key].length > 0) {
-        // This is the crucial part: if the source has a non-empty array,
-        // it should overwrite the target's default array. This ensures DB content is prioritized.
-        output[key] = source[key];
-      }
-      else if (source[key] !== undefined && source[key] !== null) {
+      } 
+      else if (dbContent[key] !== undefined && dbContent[key] !== null) {
         // For primitives, if the source has a value, it overwrites the default.
-        output[key] = source[key];
+        output[key] = dbContent[key];
       }
     }
   }
   
   // Final check to ensure no top-level keys from default are missing if they weren't in the DB
-  for (const key in target) {
+  for (const key in defaultContent) {
     if (!(key in output)) {
-      output[key] = target[key];
+      output[key] = defaultContent[key];
     }
   }
 
@@ -55,7 +55,7 @@ function deepMerge(target: any, source: any): SiteContent {
 export default async function Home() {
   const dbContent = await getSiteContent();
   // The merge now correctly prioritizes DB content over defaults.
-  const content = deepMerge(defaultContent, dbContent);
+  const content = deepMerge(dbContent, defaultContent);
 
 
   return (
@@ -72,7 +72,6 @@ export default async function Home() {
           artistImage={content.artistImage}
           artistName={content.artistName}
           artistBio={content.artistBio}
-          stats={content.aboutStats}
         />
         {(content.featuredPlaylists && content.featuredPlaylists.length > 0) || (content.instagramReels && content.instagramReels.length > 0) ? (
           <MusicSection 
@@ -94,5 +93,3 @@ export default async function Home() {
     </div>
   );
 }
-
-    

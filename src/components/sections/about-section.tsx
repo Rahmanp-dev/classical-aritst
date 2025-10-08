@@ -15,17 +15,9 @@ type AboutProps = {
   artistImage: Omit<ImageType, "id" | "description">;
   artistName: string;
   artistBio: string;
-  stats: AboutStat[];
 }
 
-const iconMap: { [key: string]: React.ElementType } = {
-  Award,
-  Globe,
-  Music2,
-  Sparkles,
-};
-
-export function AboutSection({ artistImage, artistName, artistBio, stats }: AboutProps) {
+export function AboutSection({ artistImage, artistName, artistBio }: AboutProps) {
   // Truncate bio to the first paragraph
   const firstParagraph = artistBio.split('\n\n')[0];
 
@@ -110,33 +102,6 @@ export function AboutSection({ artistImage, artistName, artistBio, stats }: Abou
               </DialogContent>
             </Dialog>
           </div>
-
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <FloatingGrid cols={3} gap="md">
-              {stats.map((stat, index) => {
-                const IconComponent = iconMap[stat.icon] || Sparkles;
-                return (
-                  <FloatingCard 
-                    key={stat.label}
-                    variant="minimal"
-                    size="sm"
-                    delay={0.6 + index * 0.1}
-                    className="text-center hover:bg-accent/5"
-                  >
-                    <IconComponent className="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform duration-300" />
-                    <div className="text-2xl font-bold font-headline text-foreground">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground uppercase tracking-wide">{stat.label}</div>
-                  </FloatingCard>
-                )
-              })}
-            </FloatingGrid>
-          </motion.div>
         </motion.div>
       </div>
     </FloatingSection>

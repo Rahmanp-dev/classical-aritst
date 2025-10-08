@@ -115,7 +115,7 @@ const formSchema = z.object({
     label: z.string().min(1, "Label is required."),
     value: z.string().min(1, "Value is required."),
     icon: z.string().min(1, "Icon name is required."),
-  })).length(3, "There must be exactly 3 stats."),
+  })),
 
   socialLinks: z.array(z.object({
     platform: z.string().min(1, 'Platform is required.'),
@@ -288,5 +288,3 @@ export async function saveSiteContent(values: SiteContent) {
     return { success: false, message: errorMessage };
   }
 }
-
-    
